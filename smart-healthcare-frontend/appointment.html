@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Appointment</title>
+  <link rel="stylesheet" href="css/appointment.css" />
+</head>
+<body>
+
+<div class="appointment-container">
+  <h2>🩺 Book Appointment</h2>
+  <p class="subtitle">Find the right doctor for your health concern</p>
+
+  <div class="form-group">
+    <label>Disease / Problem</label>
+    <input
+      type="text"
+      id="disease"
+      placeholder="e.g. diabetes, skin, heart"
+    />
+    <button type="button" class="btn" onclick="findDoctors()">
+      Find Doctors
+    </button>
+  </div>
+
+  <div class="form-group">
+    <label>Select Doctor</label>
+    <select id="doctorSelect">
+      <option value="">Select doctor</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="date" />
+    </div>
+
+    <div class="form-group">
+      <label>Time</label>
+      <select id="time">
+        <option value="10:00 AM">10:00 AM</option>
+        <option value="11:00 AM">11:00 AM</option>
+        <option value="3:00 PM">3:00 PM</option>
+        <option value="4:00 PM">4:00 PM</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ✅ FIXED BUTTON -->
+  <button
+    type="button"
+    class="btn-primary"
+    onclick="bookAppointment()"
+  >
+    Confirm Appointment
+  </button>
+
+  <p class="back-link">
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </p>
+</div>
+
+<script src="js/appointment.js"></script>
+</body>
+</html>

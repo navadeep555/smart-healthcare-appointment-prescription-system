@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard | MediCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+  <div class="navbar-left">
+    <h2>MediCare</h2>
+    <span class="tagline">Your Health, Our Priority</span>
+  </div>
+
+  <div class="nav-links">
+    <a href="find-doctor.html">🔍 Find Doctors</a>
+    <a href="appointment.html">📅 Appointments</a>
+    <a href="records.html">📋 Records</a>
+    <a href="#">💊 Services</a>
+    <a href="#">ℹ️ About</a>
+  </div>
+
+  <div class="navbar-right">
+    <!-- Notifications -->
+    <div class="notifications">
+      <span class="notification-icon">🔔</span>
+      <span class="notification-badge" id="notificationBadge">0</span>
+    </div>
+
+    <!-- Profile -->
+    <div class="profile-wrapper">
+      <div id="profileCircle" class="profile-circle">N</div>
+
+      <div id="profileMenu" class="profile-menu">
+        <div class="profile-info">
+          <strong id="profileName">Navadeep</strong><br>
+          <span>Patient</span>
+        </div>
+
+        <hr>
+
+        <!-- ✅ ORIGINAL LINKS PRESERVED -->
+        <a href="dashboard.html">
+          <span class="menu-icon">🏠</span> Dashboard
+        </a>
+        <a href="appointment.html">
+          <span class="menu-icon">📅</span> Appointments
+        </a>
+        <a href="records.html">
+          <span class="menu-icon">📋</span> Medical Records
+        </a>
+
+        <!-- ✅ NEW LINKS ADDED -->
+        <a href="#" onclick="viewPrescriptionHistory()">
+          <span class="menu-icon">💊</span> Prescription History
+        </a>
+        <a href="#" onclick="viewLabReports()">
+          <span class="menu-icon">🧪</span> Lab Reports
+        </a>
+        <a href="#" onclick="openHealthMetrics()">
+          <span class="menu-icon">📊</span> Health Metrics
+        </a>
+        <a href="#" onclick="openEditProfile()">
+          <span class="menu-icon">✏️</span> Edit Profile
+        </a>
+        <a href="#" onclick="openSettings()">
+          <span class="menu-icon">⚙️</span> Settings
+        </a>
+
+        <hr>
+
+        <a href="#" onclick="logout()" class="logout">
+          <span class="menu-icon">🚪</span> Sign out
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= MAIN DASHBOARD ================= -->
+<main class="dashboard">
+
+  <!-- Header -->
+  <section class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 id="welcome">Welcome back!</h1>
+        <p>Manage your health journey from your personal dashboard.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-primary" onclick="window.location.href='appointment.html'">
+          📅 Book Appointment
+        </button>
+        <button class="btn-secondary" onclick="openEmergencyContact()">
+          🚨 Emergency
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HEALTH STATISTICS ================= -->
+  <section class="stats-section">
+    <div class="stat-card stat-card-blue">
+      <div class="stat-icon">📅</div>
+      <div class="stat-details">
+        <h3 id="totalAppointments">0</h3>
+        <p>Total Appointments</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-details">
+        <h3 id="completedAppointments">0</h3>
+        <p>Completed</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-orange">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-details">
+        <h3 id="upcomingAppointments">0</h3>
+        <p>Upcoming</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-purple">
+      <div class="stat-icon">💊</div>
+      <div class="stat-details">
+        <h3 id="totalPrescriptions">0</h3>
+        <p>Prescriptions</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= QUICK ACTIONS ================= -->
+  <section class="quick-actions">
+
+    <div class="action-card" onclick="window.location.href='appointment.html'">
+      <div class="action-icon">📅</div>
+      <h3>Book Appointment</h3>
+      <p>Find a doctor and schedule</p>
+    </div>
+
+    <div class="action-card" onclick="window.location.href='records.html'">
+      <div class="action-icon">📋</div>
+      <h3>Medical Records</h3>
+      <p>View your health history</p>
+    </div>
+
+    <div class="action-card" onclick="viewPrescriptionHistory()">
+      <div class="action-icon">💊</div>
+      <h3>Prescriptions</h3>
+      <p>View all prescriptions</p>
+    </div>
+
+    <div class="action-card highlight" onclick="openEditProfile()">
+      <div class="action-icon">✏️</div>
+      <h3>Edit Profile</h3>
+      <p>Update your information</p>
+    </div>
+
+  </section>
+
+  <!-- ================= MAIN CONTENT GRID ================= -->
+  <section class="content-grid">
+    
+    <!-- ================= LEFT COLUMN ================= -->
+    <div class="main-column">
+      
+      <!-- Upcoming Appointments -->
+      <div class="info-card">
+        <div class="card-header">
+          <h2>Upcoming Appointments</h2>
+          <a href="appointment.html" class="view-all-link">View All →</a>
+        </div>
+
+        <div class="info-body">
+          <div class="card-icon">📅</div>
+
+          <!-- ✅ REQUIRED CONTAINER -->
+          <div id="appointments">
+            <p class="loading">Loading appointments...</p>
+          </div>
+
+          <button class="btn-dark btn-full-width"
+            onclick="window.location.href='appointment.html'">
+            📅 Book New Appointment
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= RECENT PRESCRIPTIONS ================= -->
+      <div class="info-card">
+        <div class="card-header">
+          <h2>Recent Prescriptions</h2>
+          <a href="#" onclick="viewPrescriptionHistory()" class="view-all-link">View All →</a>
+        </div>
+
+        <div class="info-body">
+          <div class="card-icon">📄</div>
+
+          <!-- ✅ REQUIRED CONTAINER -->
+          <div id="prescriptions">
+            <p class="loading">Loading prescriptions...</p>
+          </div>
+
+          <!-- ✅ QR SCAN NOTE -->
+          <div class="info-note">
+            <span class="note-icon">📱</span>
+            <p>Scan QR code using your mobile camera to download prescription PDF</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= RIGHT SIDEBAR ================= -->
+    <div class="sidebar-column">
+      
+      <!-- Health Tips Card -->
+      <div class="info-card tips-card">
+        <h2>Health Tips</h2>
+        <div class="tips-content">
+          <div class="tip-item">
+            <span class="tip-icon">💧</span>
+            <p>Drink 8 glasses of water daily</p>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">🏃</span>
+            <p>Exercise for 30 minutes daily</p>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">😴</span>
+            <p>Get 7-8 hours of sleep</p>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">🥗</span>
+            <p>Eat balanced, nutritious meals</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contacts Card -->
+      <div class="info-card emergency-card">
+        <h2>Emergency Contacts</h2>
+        <div class="emergency-content">
+          <div class="emergency-item">
+            <span class="emergency-icon">🚑</span>
+            <div>
+              <strong>Ambulance</strong>
+              <p>102 / 108</p>
+            </div>
+          </div>
+          <div class="emergency-item">
+            <span class="emergency-icon">🏥</span>
+            <div>
+              <strong>Hospital</strong>
+              <p>+91 XXXXX XXXXX</p>
+            </div>
+          </div>
+          <div class="emergency-item">
+            <span class="emergency-icon">👨‍⚕️</span>
+            <div>
+              <strong>Your Doctor</strong>
+              <p id="primaryDoctorContact">Not set</p>
+            </div>
+          </div>
+          <button class="btn-emergency" onclick="openEmergencyContact()">
+            🚨 Call Emergency
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Activity Card -->
+      <div class="info-card activity-card">
+        <h2>Recent Activity</h2>
+        <div id="recentActivity">
+          <div class="activity-item">
+            <div class="activity-icon">✅</div>
+            <div class="activity-details">
+              <p class="activity-title">Appointment completed</p>
+              <p class="activity-time">2 days ago</p>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">📋</div>
+            <div class="activity-details">
+              <p class="activity-title">Prescription received</p>
+              <p class="activity-time">2 days ago</p>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">📅</div>
+            <div class="activity-details">
+              <p class="activity-title">Appointment booked</p>
+              <p class="activity-time">5 days ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<!-- ================= EDIT PROFILE MODAL ================= -->
+<div id="editProfileModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Edit Profile</h2>
+      <button class="close-btn" onclick="closeEditProfile()">×</button>
+    </div>
+
+    <form onsubmit="saveProfile(event)">
+      <div class="form-group">
+        <label>Name</label>
+        <input id="editName" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="editEmail" type="email" required>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input id="editPhone" type="tel" placeholder="+91 XXXXX XXXXX">
+      </div>
+
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input id="editDOB" type="date">
+      </div>
+
+      <div class="form-group">
+        <label>Blood Group</label>
+        <select id="editBloodGroup">
+          <option value="">Select Blood Group</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Address</label>
+        <textarea id="editAddress" rows="3"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn-dark">Save Changes</button>
+        <button type="button" class="btn-light" onclick="closeEditProfile()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= EMERGENCY CONTACT MODAL ================= -->
+<div id="emergencyModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🚨 Emergency Contacts</h2>
+      <button class="close-btn" onclick="closeEmergencyContact()">×</button>
+    </div>
+
+    <div style="padding: 2rem;">
+      <div class="emergency-list">
+        <div class="emergency-contact-item">
+          <h3>🚑 Ambulance</h3>
+          <p class="emergency-number">102 / 108</p>
+          <button class="btn-emergency" onclick="window.location.href='tel:102'">Call Now</button>
+        </div>
+
+        <div class="emergency-contact-item">
+          <h3>🏥 Nearest Hospital</h3>
+          <p class="emergency-number">+91 XXXXX XXXXX</p>
+          <button class="btn-emergency" onclick="alert('Calling hospital...')">Call Now</button>
+        </div>
+
+        <div class="emergency-contact-item">
+          <h3>👨‍⚕️ Your Primary Doctor</h3>
+          <p class="emergency-number">Not configured</p>
+          <button class="btn-secondary" onclick="alert('Set up in Profile Settings')">Set Contact</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

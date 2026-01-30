@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Account</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-box">
+  <h2>Create Account</h2>
+  <p>Join MediCare for better healthcare</p>
+
+  <form onsubmit="register(event)">
+    <input
+      type="text"
+      id="name"
+      placeholder="Full Name"
+      required
+    >
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+      required
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      minlength="6"
+      required
+    >
+
+    <!-- ✅ ADMIN ADDED -->
+    <select id="role" required>
+      <option value="" disabled selected>Select Role</option>
+      <option value="patient">Patient</option>
+      <option value="doctor">Doctor</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <p class="auth-link">
+    Already have an account?
+    <a href="login.html">Sign in</a>
+  </p>
+</div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>

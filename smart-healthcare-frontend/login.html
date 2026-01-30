@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-box">
+  <h2>Welcome Back</h2>
+  <p>Sign in to your MediCare account</p>
+
+  <!-- ✅ onsubmit correctly wired -->
+  <form onsubmit="login(event)">
+
+    <!-- ✅ ADD id="email" -->
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+      required
+    >
+
+    <!-- ✅ ADD id="password" -->
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      required
+    >
+
+    <!-- ✅ EXPLICIT submit button -->
+    <button type="submit">Sign in</button>
+
+  </form>
+
+  <p class="auth-link">
+    Don't have an account?
+    <a href="register.html">Sign up</a>
+  </p>
+  <p class="auth-link">
+  <a href="forgot-password.html">Forgot password?</a>
+</p>
+
+</div>
+
+
+<script src="js/auth.js"></script>
+</body>
+</html>
