@@ -27,6 +27,15 @@ const todayCancelledEl = document.getElementById("todayCancelled");
 // Store all prescriptions for filtering
 let allPrescriptions = [];
 
+function formatDoctorName(name) {
+  if (!name) return "";
+  const trimmed = name.trim();
+  if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) {
+    return trimmed;
+  }
+  return `Dr. ${trimmed}`;
+}
+
 /* ================= PROFILE SETUP ================= */
 const profileCircle = document.getElementById("profileCircle");
 const profileName = document.getElementById("profileName");
@@ -45,7 +54,7 @@ if (profileCircle) {
   profileCircle.onclick = (e) => {
     e.stopPropagation();
     if (profileMenu) {
-      profileMenu.style.display = 
+      profileMenu.style.display =
         profileMenu.style.display === "flex" ? "none" : "flex";
     }
   };
@@ -61,6 +70,13 @@ async function loadAdminDashboard() {
   try {
     await loadStats();
     await loadPrescriptionAudit();
+
+    // Check which tab is active and load its data
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab.id === 'users-tab') loadUserManagement();
+    if (activeTab.id === 'appointments-tab') loadAppointmentManagement();
+    if (activeTab.id === 'analytics-tab') loadAnalytics();
+
   } catch (err) {
     console.error("ADMIN DASHBOARD ERROR:", err);
   }
@@ -95,21 +111,21 @@ async function loadStats() {
 
     if (appData.success) {
       appointmentsEl.innerText = appData.total;
-      
+
       // Calculate today's stats
       const today = new Date().toISOString().split('T')[0];
-      const todayApps = appData.appointments?.filter(app => 
+      const todayApps = appData.appointments?.filter(app =>
         app.date === today
       ) || [];
-      
+
       if (todayAppointmentsEl) todayAppointmentsEl.innerText = todayApps.length;
       if (todayCompletedEl) {
-        todayCompletedEl.innerText = todayApps.filter(app => 
+        todayCompletedEl.innerText = todayApps.filter(app =>
           app.status === "Completed"
         ).length;
       }
       if (todayCancelledEl) {
-        todayCancelledEl.innerText = todayApps.filter(app => 
+        todayCancelledEl.innerText = todayApps.filter(app =>
           app.status === "Cancelled"
         ).length;
       }
@@ -145,10 +161,10 @@ async function loadPrescriptionAudit() {
 
     // Store prescriptions for filtering
     allPrescriptions = data.prescriptions;
-    
+
     // Update additional stats
     updatePrescriptionStats(allPrescriptions);
-    
+
     // Display prescriptions
     displayPrescriptions(allPrescriptions);
 
@@ -164,11 +180,11 @@ function updatePrescriptionStats(prescriptions) {
   const active = prescriptions.filter(p => !p.isRevoked).length;
   const revoked = prescriptions.filter(p => p.isRevoked).length;
   const invalid = prescriptions.filter(p => !p.isValid && !p.isRevoked).length;
-  
+
   if (activePrescriptionsEl) activePrescriptionsEl.innerText = active;
   if (revokedPrescriptionsEl) revokedPrescriptionsEl.innerText = revoked;
   if (invalidSignaturesEl) invalidSignaturesEl.innerText = invalid;
-  
+
   // Update notification badge
   const notificationBadge = document.getElementById("adminNotificationBadge");
   if (notificationBadge) {
@@ -191,36 +207,33 @@ function displayPrescriptions(prescriptions) {
   prescriptions.forEach(p => {
     const row = document.createElement("tr");
     row.style.transition = "all 0.2s";
-    
+
     row.innerHTML = `
       <td>
         <strong>${p.patientName}</strong>
       </td>
       <td>
-        <strong>Dr. ${p.doctorName}</strong>
+        <strong>${formatDoctorName(p.doctorName)}</strong>
       </td>
       <td>${new Date(p.date).toLocaleDateString()}</td>
 
       <!-- Signature Status (FIXED LOGIC) -->
-      <td class="${
-        p.isRevoked ? "invalid" : p.isValid ? "valid" : "invalid"
+      <td class="${p.isRevoked ? "invalid" : p.isValid ? "valid" : "invalid"
       }">
-        ${
-          p.isRevoked
-            ? "❌ Revoked"
-            : p.isValid
-              ? "✅ Verified"
-              : "⚠️ Invalid"
-        }
+        ${p.isRevoked
+        ? "❌ Revoked"
+        : p.isValid
+          ? "✅ Verified"
+          : "⚠️ Invalid"
+      }
       </td>
 
       <!-- Revocation Status -->
       <td>
-        ${
-          p.isRevoked
-            ? "<span style='color: var(--danger-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 999px; font-size: 0.85rem;'>🚫 Revoked</span>"
-            : "<span style='color: var(--secondary-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); border-radius: 999px; font-size: 0.85rem;'>✅ Active</span>"
-        }
+        ${p.isRevoked
+        ? "<span style='color: var(--danger-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 999px; font-size: 0.85rem;'>🚫 Revoked</span>"
+        : "<span style='color: var(--secondary-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); border-radius: 999px; font-size: 0.85rem;'>✅ Active</span>"
+      }
       </td>
 
       <!-- Admin Actions -->
@@ -252,7 +265,7 @@ function displayPrescriptions(prescriptions) {
         </button>
       </td>
     `;
-    
+
     prescriptionTable.appendChild(row);
   });
 }
@@ -262,9 +275,9 @@ function applyFilters() {
   const statusFilter = document.getElementById("filterStatus").value;
   const dateFrom = document.getElementById("filterDateFrom").value;
   const dateTo = document.getElementById("filterDateTo").value;
-  
+
   let filtered = [...allPrescriptions];
-  
+
   // Status filter
   if (statusFilter !== "all") {
     if (statusFilter === "active") {
@@ -275,20 +288,20 @@ function applyFilters() {
       filtered = filtered.filter(p => !p.isValid && !p.isRevoked);
     }
   }
-  
+
   // Date filters
   if (dateFrom) {
-    filtered = filtered.filter(p => 
+    filtered = filtered.filter(p =>
       new Date(p.date) >= new Date(dateFrom)
     );
   }
-  
+
   if (dateTo) {
-    filtered = filtered.filter(p => 
+    filtered = filtered.filter(p =>
       new Date(p.date) <= new Date(dateTo)
     );
   }
-  
+
   displayPrescriptions(filtered);
 }
 
@@ -303,21 +316,21 @@ function clearFilters() {
 async function viewPrescriptionDetails(id) {
   const modal = document.getElementById("prescriptionDetailsModal");
   const content = document.getElementById("prescriptionDetailsContent");
-  
+
   if (!modal || !content) return;
-  
+
   modal.style.display = "flex";
   content.innerHTML = "<p class='loading'>Loading prescription details...</p>";
-  
+
   try {
     // Find prescription from allPrescriptions
     const prescription = allPrescriptions.find(p => p._id === id);
-    
+
     if (!prescription) {
       content.innerHTML = "<p style='color: var(--danger-color);'>Prescription not found</p>";
       return;
     }
-    
+
     content.innerHTML = `
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
         <div>
@@ -328,7 +341,7 @@ async function viewPrescriptionDetails(id) {
         
         <div>
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Doctor Information</h3>
-          <p><strong>Name:</strong> Dr. ${prescription.doctorName}</p>
+          <p><strong>Name:</strong> ${formatDoctorName(prescription.doctorName)}</p>
           <p><strong>Email:</strong> ${prescription.doctorEmail || 'N/A'}</p>
         </div>
         
@@ -378,10 +391,10 @@ async function editPrescription(id, isRevoked) {
 
   const newDiagnosis = prompt("Enter updated diagnosis:");
   if (newDiagnosis === null) return; // User cancelled
-  
+
   const newMedicines = prompt("Enter updated medicines:");
   if (newMedicines === null) return; // User cancelled
-  
+
   const newAdvice = prompt("Enter updated advice:");
   if (newAdvice === null) return; // User cancelled
 
@@ -448,20 +461,163 @@ function switchTab(tabName) {
   document.querySelectorAll('.tab-content').forEach(content => {
     content.classList.remove('active');
   });
-  
+
   // Remove active class from all tabs
   document.querySelectorAll('.tab').forEach(tab => {
     tab.classList.remove('active');
   });
-  
+
   // Show selected tab content
   const selectedTab = document.getElementById(`${tabName}-tab`);
   if (selectedTab) {
     selectedTab.classList.add('active');
   }
-  
+
   // Add active class to clicked tab
-  event.target.classList.add('active');
+  if (event && event.target) {
+    event.target.classList.add('active');
+  }
+
+  // Load specific tab data
+  if (tabName === 'users') loadUserManagement();
+  if (tabName === 'appointments') loadAppointmentManagement();
+  if (tabName === 'analytics') loadAnalytics();
+  if (tabName === 'prescriptions') loadPrescriptionAudit();
+}
+
+/* ================= USER MANAGEMENT LOGIC ================= */
+async function loadUserManagement() {
+  const tableBody = document.getElementById("userTableBody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading users...</td></tr>';
+
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/users-list", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      tableBody.innerHTML = "";
+      data.users.forEach(u => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${u.name}</td>
+          <td>${u.email}</td>
+          <td><span class="tag role-${u.role}">${u.role}</span></td>
+          <td>
+            <button class="admin-btn delete-btn" onclick="deleteUser('${u._id}', '${u.role}')">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  } catch (err) {
+    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading users</td></tr>';
+  }
+}
+
+async function deleteUser(id, role) {
+  if (!confirm(`Are you sure you want to delete this ${role}?`)) return;
+
+  try {
+    const endpoint = role === 'doctor' ? `doctor/${id}` : `patient/${id}`;
+    const res = await fetch(`http://localhost:5000/api/admin/${endpoint}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      alert(data.message);
+      loadUserManagement();
+      loadStats();
+    }
+  } catch (err) {
+    alert("Error deleting user");
+  }
+}
+
+/* ================= APPOINTMENT MANAGEMENT LOGIC ================= */
+async function loadAppointmentManagement() {
+  const tableBody = document.getElementById("appointmentTableBody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading appointments...</td></tr>';
+
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/appointments-v2", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      tableBody.innerHTML = "";
+      data.appointments.forEach(a => {
+        const row = document.createElement("tr");
+        const statusColor = a.status === 'Cancelled' ? 'red' : a.status === 'Completed' ? 'green' : 'blue';
+        row.innerHTML = `
+          <td>${a.patientName}</td>
+          <td>${formatDoctorName(a.doctor?.name)}</td>
+          <td>${a.date} | ${a.time}</td>
+          <td><b style="color:${statusColor}">${a.status}</b></td>
+          <td>
+             <button class="admin-btn view-btn" onclick="viewPrescriptionDetails('${a._id}')">
+               <i class="fa-solid fa-eye"></i> View
+             </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  } catch (err) {
+    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error loading appointments</td></tr>';
+  }
+}
+
+/* ================= ANALYTICS LOGIC ================= */
+async function loadAnalytics() {
+  const container = document.getElementById("analyticsContent");
+  if (!container) return;
+
+  container.innerHTML = '<p style="text-align:center;">Generating insights...</p>';
+
+  try {
+    const [usersRes, appsRes, prescriptionsRes] = await Promise.all([
+      fetch("http://localhost:5000/api/admin/users-v2", { headers: { Authorization: `Bearer ${token}` } }),
+      fetch("http://localhost:5000/api/admin/appointments-v2", { headers: { Authorization: `Bearer ${token}` } }),
+      fetch("http://localhost:5000/api/admin/prescriptions-v2", { headers: { Authorization: `Bearer ${token}` } })
+    ]);
+
+    const usersData = await usersRes.json();
+    const appsData = await appsRes.json();
+    const prescriptionsData = await prescriptionsRes.json();
+
+    const activePrescriptions = prescriptionsData.prescriptions.filter(p => !p.isRevoked).length;
+    const revokedPrescriptions = prescriptionsData.prescriptions.filter(p => p.isRevoked).length;
+
+    container.innerHTML = `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+        <div class="chart-card">
+          <h3>User Population</h3>
+          <p>Doctors: <strong>${usersData.doctors}</strong></p>
+          <p>Patients: <strong>${usersData.patients}</strong></p>
+          <p>Ratio: <strong>${(usersData.patients / (usersData.doctors || 1)).toFixed(1)} patients per doctor</strong></p>
+        </div>
+        <div class="chart-card">
+          <h3>Prescription Audit</h3>
+          <p>Total Issued: <strong>${prescriptionsData.prescriptions.length}</strong></p>
+          <p>Active: <strong style="color:green;">${activePrescriptions}</strong></p>
+          <p>Revoked: <strong style="color:red;">${revokedPrescriptions}</strong></p>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = '<p style="text-align:center; color:red;">Error loading analytics</p>';
+  }
 }
 
 /* ================= NEW DASHBOARD FUNCTIONS ================= */
@@ -525,7 +681,7 @@ function logout() {
 }
 
 /* ================= CLOSE MODALS ON OUTSIDE CLICK ================= */
-window.onclick = function(event) {
+window.onclick = function (event) {
   const modal = document.getElementById("prescriptionDetailsModal");
   if (event.target === modal) {
     closePrescriptionDetails();

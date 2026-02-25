@@ -1,14 +1,14 @@
 const express = require("express");
 const Doctor = require("../models/Doctor");
-const verifyToken = require("../middleware/verifyToken"); 
+const verifyToken = require("../middleware/verifyToken");
 
 const router = express.Router();
 
 /* ================= ADD DOCTOR (ADMIN) ================= */
-router.post("/add-doctor", verifyToken, async (req, res) => { 
+router.post("/add-doctor", verifyToken, async (req, res) => {
   try {
 
-    
+
     if (req.user.role !== "admin") {
       return res.status(403).json({
         success: false,
@@ -58,10 +58,10 @@ router.post("/add-doctor", verifyToken, async (req, res) => {
 });
 
 /* ================= GET USERS STATS (ADMIN) ================= */
-const User = require("../models/User");                
-const Appointment = require("../models/Appointment"); 
+const User = require("../models/User");
+const Appointment = require("../models/Appointment");
 
-router.get("/users", verifyToken, async (req, res) => { 
+router.get("/users", verifyToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ success: false });
@@ -101,7 +101,7 @@ router.get("/appointments", verifyToken, async (req, res) => {
 });
 
 /* ================= PRESCRIPTION AUDIT (ADMIN) ================= */
-router.get("/prescriptions", verifyToken, async (req, res) => { 
+router.get("/prescriptions", verifyToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ success: false });
@@ -128,7 +128,7 @@ router.get("/prescriptions", verifyToken, async (req, res) => {
 });
 
 /* ================= PRESCRIPTION AUDIT v2 (ADMIN - FIXED) ================= */
-router.get("/prescriptions-v2", verifyToken, async (req, res) => { 
+router.get("/prescriptions-v2", verifyToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ success: false });
@@ -141,12 +141,12 @@ router.get("/prescriptions-v2", verifyToken, async (req, res) => {
     res.json({
       success: true,
       prescriptions: records.map(r => ({
-        _id: r._id, 
+        _id: r._id,
         patientName: r.patientName,
         doctorName: r.doctor?.name || "N/A",
         date: r.createdAt,
         isValid: !!r.prescription?.signature,
-        isRevoked: r.prescription?.isRevoked || false 
+        isRevoked: r.prescription?.isRevoked || false
       }))
     });
 
@@ -156,14 +156,14 @@ router.get("/prescriptions-v2", verifyToken, async (req, res) => {
 });
 
 /* ================= USERS STATS v2 (ADMIN - FIXED) ================= */
-router.get("/users-v2", verifyToken, async (req, res) => { 
+router.get("/users-v2", verifyToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ success: false });
     }
 
     const patients = await User.countDocuments({ role: "patient" });
-    const doctors = await Doctor.countDocuments(); 
+    const doctors = await Doctor.countDocuments();
     const total = patients + doctors + 1; // +1 admin
 
     res.json({
@@ -178,20 +178,63 @@ router.get("/users-v2", verifyToken, async (req, res) => {
 });
 
 /* ================= APPOINTMENTS COUNT v2 (ADMIN - FIXED) ================= */
-router.get("/appointments-v2", verifyToken, async (req, res) => { 
+router.get("/appointments-v2", verifyToken, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ success: false });
     }
 
-    const total = await Appointment.countDocuments({
-      status: { $ne: "Cancelled" }
-    });
+    const appointments = await Appointment.find()
+      .populate("doctor", "name specialization")
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      total
+      total: appointments.length,
+      appointments
     });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+/* ================= LIST ALL USERS (ADMIN) ================= */
+router.get("/users-list", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false });
+    }
+
+    const users = await User.find({ role: { $ne: "admin" } }).select("-password");
+    res.json({ success: true, users });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+/* ================= LIST ALL PATIENTS (ADMIN) ================= */
+router.get("/patients-list", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false });
+    }
+
+    const patients = await User.find({ role: "patient" }).select("-password");
+    res.json({ success: true, patients });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+/* ================= LIST ALL DOCTORS (ADMIN) ================= */
+router.get("/doctors-list", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false });
+    }
+
+    const doctors = await Doctor.find();
+    res.json({ success: true, doctors });
   } catch (err) {
     res.status(500).json({ success: false });
   }
@@ -245,10 +288,10 @@ router.put("/prescription/revoke/:id", verifyToken, async (req, res) => {
       return res.json({ success: false, message: "Prescription not found" });
     }
 
-  
+
     appointment.prescription.revoked = true;
 
-    
+
     appointment.prescription.isRevoked = true;
     appointment.prescription.signature = null;
     appointment.prescription.revokedBy = req.user.id;

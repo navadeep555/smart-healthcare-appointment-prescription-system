@@ -44,7 +44,7 @@ async function startKeyExchange() {
     const clientPublicKeyBase64 = arrayBufferToBase64(clientPublicKeyRaw);
 
     /* STEP 5: Send client public key to server */
-    await fetch("http://localhost:5000/api/key-exchange", {
+    await fetch("http://localhost:5000/api/auth/key-exchange/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

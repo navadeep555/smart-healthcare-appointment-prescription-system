@@ -1,293 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Doctor Dashboard | MediCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
+
 <body>
 
-<!-- ================= NAVBAR ================= -->
-<nav class="navbar">
-  <div class="navbar-left">
-    <h2>MediCare</h2>
-    <span class="tagline">Healthcare Management System</span>
-  </div>
-
-  <div class="navbar-right">
-    <div class="notifications">
-      <span class="notification-icon">🔔</span>
-      <span class="notification-badge">3</span>
+  <!-- ================= NAVBAR ================= -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <h2>MediCare</h2>
+      <span class="tagline">Healthcare Management System</span>
     </div>
 
-    <div class="profile-wrapper">
-      <div id="profileCircle" class="profile-circle">D</div>
-
-      <div id="profileMenu" class="profile-menu" style="display:none;">
-        <div class="profile-info">
-          <strong id="profileName"></strong><br>
-          <span>Doctor</span>
-        </div>
-
-        <hr>
-
-        <!-- ✅ ORIGINAL LINK -->
-        <a href="doctor-prescriptions.html">
-          <span class="menu-icon">📋</span> Prescription History
-        </a>
-
-        <!-- ✅ NEW LINKS -->
-        <a href="#" onclick="viewSchedule()">
-          <span class="menu-icon">📅</span> My Schedule
-        </a>
-
-        <a href="#" onclick="viewPatients()">
-          <span class="menu-icon">👥</span> My Patients
-        </a>
-
-        <a href="#" onclick="openSettings()">
-          <span class="menu-icon">⚙️</span> Settings
-        </a>
-
-        <a href="#" onclick="openEditProfile()">
-          <span class="menu-icon">✏️</span> Edit Profile
-        </a>
-
-        <a href="#" onclick="logout()">
-          <span class="menu-icon">🚪</span> Logout
-        </a>
+    <div class="navbar-right">
+      <div class="notifications">
+        <span class="notification-icon"><i class="fa-solid fa-bell"></i></span>
+        <span class="notification-badge">3</span>
       </div>
-    </div>
-  </div>
-</nav>
 
-<!-- ================= DASHBOARD ================= -->
-<main class="dashboard">
+      <div class="profile-wrapper">
+        <div id="profileCircle" class="profile-circle">D</div>
 
-  <!-- ================= HEADER ================= -->
-  <section class="dashboard-header">
-    <div class="header-content">
-      <div>
-        <h1 id="welcome"></h1>
-        <p>Manage your patient appointments and prescriptions</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn-primary" onclick="openNewAppointment()">+ New Appointment</button>
-        <button class="btn-secondary" onclick="openQuickPrescription()">📝 Quick Prescription</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= STATISTICS CARDS ================= -->
-  <section class="stats-section">
-    <div class="stat-card stat-card-blue">
-      <div class="stat-icon">👥</div>
-      <div class="stat-details">
-        <h3 id="totalPatients">0</h3>
-        <p>Total Patients</p>
-      </div>
-    </div>
-
-    <div class="stat-card stat-card-green">
-      <div class="stat-icon">📅</div>
-      <div class="stat-details">
-        <h3 id="todayAppointments">0</h3>
-        <p>Today's Appointments</p>
-      </div>
-    </div>
-
-    <div class="stat-card stat-card-orange">
-      <div class="stat-icon">⏳</div>
-      <div class="stat-details">
-        <h3 id="pendingAppointments">0</h3>
-        <p>Pending</p>
-      </div>
-    </div>
-
-    <div class="stat-card stat-card-purple">
-      <div class="stat-icon">✅</div>
-      <div class="stat-details">
-        <h3 id="completedToday">0</h3>
-        <p>Completed Today</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= MAIN CONTENT GRID ================= -->
-  <section class="content-grid">
-    
-    <!-- ================= APPOINTMENTS (LEFT COLUMN) ================= -->
-    <div class="info-cards">
-      <div class="info-card">
-        <div class="card-header">
-          <h2>Appointments</h2>
-          <div class="card-filters">
-            <button class="filter-btn active" onclick="filterAppointments('all')">All</button>
-            <button class="filter-btn" onclick="filterAppointments('today')">Today</button>
-            <button class="filter-btn" onclick="filterAppointments('pending')">Pending</button>
+        <div id="profileMenu" class="profile-menu" style="display:none;">
+          <div class="profile-info">
+            <strong id="profileName"></strong><br>
+            <span>Doctor</span>
           </div>
-        </div>
 
-        <!-- 🔥 REQUIRED CONTAINER (JS FILLS THIS) -->
-        <div id="doctorAppointments">
-          <p>Loading appointments...</p>
+          <hr>
+
+          <!-- ✅ ORIGINAL LINK -->
+          <a href="doctor-prescriptions.html">
+            <span class="menu-icon"><i class="fa-solid fa-clipboard-list"></i></span> Prescription History
+          </a>
+
+          <!-- ✅ NEW LINKS -->
+          <a href="#" onclick="viewSchedule()">
+            <span class="menu-icon"><i class="fa-solid fa-calendar"></i></span> My Schedule
+          </a>
+
+          <a href="#" onclick="viewPatients()">
+            <span class="menu-icon"><i class="fa-solid fa-users"></i></span> My Patients
+          </a>
+
+          <a href="#" onclick="openSettings()">
+            <span class="menu-icon"><i class="fa-solid fa-cog"></i></span> Settings
+          </a>
+
+          <a href="#" onclick="openEditProfile()">
+            <span class="menu-icon"><i class="fa-solid fa-user-edit"></i></span> Edit Profile
+          </a>
+
+          <a href="#" onclick="logout()">
+            <span class="menu-icon"><i class="fa-solid fa-sign-out-alt"></i></span> Logout
+          </a>
         </div>
       </div>
     </div>
+  </nav>
 
-    <!-- ================= QUICK ACTIONS & RECENT (RIGHT COLUMN) ================= -->
-    <div class="sidebar-cards">
-      
-      <!-- Quick Actions Card -->
-      <div class="info-card quick-actions-card">
-        <h2>Quick Actions</h2>
-        <div class="quick-actions">
-          <button class="quick-btn" onclick="viewTodaySchedule()">
-            <span class="quick-icon">📆</span>
-            <span>Today's Schedule</span>
-          </button>
-          <button class="quick-btn" onclick="openNewPrescription()">
-            <span class="quick-icon">💊</span>
-            <span>Write Prescription</span>
-          </button>
-          <button class="quick-btn" onclick="viewReports()">
-            <span class="quick-icon">📊</span>
-            <span>View Reports</span>
-          </button>
-          <button class="quick-btn" onclick="openMessaging()">
-            <span class="quick-icon">💬</span>
-            <span>Messages</span>
-          </button>
+  <!-- ================= DASHBOARD ================= -->
+  <main class="dashboard">
+
+    <!-- ================= HEADER ================= -->
+    <section class="dashboard-header">
+      <div class="header-content">
+        <div>
+          <h1 id="welcome"></h1>
+          <p>Manage your patient appointments and prescriptions</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-primary" onclick="openNewAppointment()"><i class="fa-solid fa-plus"></i> New
+            Appointment</button>
+          <button class="btn-secondary" onclick="openQuickPrescription()"><i class="fa-solid fa-file-signature"></i>
+            Quick Prescription</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STATISTICS CARDS ================= -->
+    <section class="stats-section">
+      <div class="stat-card stat-card-blue">
+        <div class="stat-icon"><i class="fa-solid fa-users-medical"></i></div>
+        <div class="stat-details">
+          <h3 id="totalPatients">0</h3>
+          <p>Total Patients</p>
         </div>
       </div>
 
-      <!-- Recent Activity Card -->
-      <div class="info-card recent-activity-card">
-        <h2>Recent Activity</h2>
-        <div id="recentActivity">
-          <div class="activity-item">
-            <div class="activity-icon">✅</div>
-            <div class="activity-details">
-              <p class="activity-title">Appointment completed</p>
-              <p class="activity-time">2 hours ago</p>
+      <div class="stat-card stat-card-green">
+        <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="stat-details">
+          <h3 id="todayAppointments">0</h3>
+          <p>Today's Appointments</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card-orange">
+        <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+        <div class="stat-details">
+          <h3 id="pendingAppointments">0</h3>
+          <p>Pending</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card-purple">
+        <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+        <div class="stat-details">
+          <h3 id="completedToday">0</h3>
+          <p>Completed Today</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MAIN CONTENT GRID ================= -->
+    <section class="content-grid">
+
+      <!-- ================= APPOINTMENTS (LEFT COLUMN) ================= -->
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-header">
+            <h2>Appointments</h2>
+            <div class="card-filters">
+              <button class="filter-btn active" onclick="filterAppointments('all')">All</button>
+              <button class="filter-btn" onclick="filterAppointments('today')">Today</button>
+              <button class="filter-btn" onclick="filterAppointments('pending')">Pending</button>
             </div>
           </div>
-          <div class="activity-item">
-            <div class="activity-icon">📋</div>
-            <div class="activity-details">
-              <p class="activity-title">Prescription created</p>
-              <p class="activity-time">5 hours ago</p>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-icon">👤</div>
-            <div class="activity-details">
-              <p class="activity-title">New patient registered</p>
-              <p class="activity-time">1 day ago</p>
-            </div>
+
+          <!-- 🔥 REQUIRED CONTAINER (JS FILLS THIS) -->
+          <div id="doctorAppointments">
+            <p>Loading appointments...</p>
           </div>
         </div>
       </div>
 
+      <!-- ================= QUICK ACTIONS & RECENT (RIGHT COLUMN) ================= -->
+      <div class="sidebar-cards">
+
+        <!-- Quick Actions Card -->
+        <div class="info-card quick-actions-card">
+          <h2>Quick Actions</h2>
+          <div class="quick-actions">
+            <button class="quick-btn" onclick="viewTodaySchedule()">
+              <span class="quick-icon"><i class="fa-solid fa-calendar-alt"></i></span>
+              <span>Today's Schedule</span>
+            </button>
+            <button class="quick-btn" onclick="openNewPrescription()">
+              <span class="quick-icon"><i class="fa-solid fa-pills"></i></span>
+              <span>Write Prescription</span>
+            </button>
+            <button class="quick-btn" onclick="viewReports()">
+              <span class="quick-icon"><i class="fa-solid fa-chart-bar"></i></span>
+              <span>View Reports</span>
+            </button>
+            <button class="quick-btn" onclick="openUploadReport()">
+              <span class="quick-icon"><i class="fa-solid fa-cloud-upload"></i></span>
+              <span>Upload Report</span>
+            </button>
+            <button class="quick-btn" onclick="openMessaging()">
+              <span class="quick-icon"><i class="fa-solid fa-comment"></i></span>
+              <span>Messages</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity Card -->
+        <div class="info-card recent-activity-card">
+          <h2>Recent Activity</h2>
+          <div id="recentActivity">
+            <div class="activity-item">
+              <div class="activity-icon"><i class="fa-solid fa-check"></i></div>
+              <div class="activity-details">
+                <p class="activity-title">Appointment completed</p>
+                <p class="activity-time">2 hours ago</p>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon"><i class="fa-solid fa-file-alt"></i></div>
+              <div class="activity-details">
+                <p class="activity-title">Prescription created</p>
+                <p class="activity-time">5 hours ago</p>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon"><i class="fa-solid fa-user"></i></div>
+              <div class="activity-details">
+                <p class="activity-title">New patient registered</p>
+                <p class="activity-time">1 day ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= EDIT PROFILE MODAL ================= -->
+  <div id="editProfileModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-btn" onclick="closeEditProfile()">×</button>
+      </div>
+
+      <form onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>Name</label>
+          <input id="docName" required />
+        </div>
+
+        <div class="form-group">
+          <label>Specialization</label>
+          <input id="docSpecialization" required />
+        </div>
+
+        <div class="form-group">
+          <label>Hospital</label>
+          <input id="docHospital" />
+        </div>
+
+        <div class="form-group">
+          <label>Experience (years)</label>
+          <input id="docExperience" type="number" />
+        </div>
+
+        <div class="form-group">
+          <label>Contact Number</label>
+          <input id="docContact" type="tel" placeholder="+91 XXXXX XXXXX" />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input id="docEmail" type="email" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-dark">Save Changes</button>
+          <button type="button" class="btn-light" onclick="closeEditProfile()">Cancel</button>
+        </div>
+      </form>
     </div>
-
-  </section>
-
-</main>
-
-<!-- ================= EDIT PROFILE MODAL ================= -->
-<div id="editProfileModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Edit Profile</h2>
-      <button class="close-btn" onclick="closeEditProfile()">×</button>
-    </div>
-
-    <form onsubmit="saveProfile(event)">
-      <div class="form-group">
-        <label>Name</label>
-        <input id="docName" required />
-      </div>
-
-      <div class="form-group">
-        <label>Specialization</label>
-        <input id="docSpecialization" required />
-      </div>
-
-      <div class="form-group">
-        <label>Hospital</label>
-        <input id="docHospital" />
-      </div>
-
-      <div class="form-group">
-        <label>Experience (years)</label>
-        <input id="docExperience" type="number" />
-      </div>
-
-      <div class="form-group">
-        <label>Contact Number</label>
-        <input id="docContact" type="tel" placeholder="+91 XXXXX XXXXX" />
-      </div>
-
-      <div class="form-group">
-        <label>Email</label>
-        <input id="docEmail" type="email" />
-      </div>
-
-      <div class="modal-actions">
-        <button type="submit" class="btn-dark">Save Changes</button>
-        <button type="button" class="btn-light" onclick="closeEditProfile()">Cancel</button>
-      </div>
-    </form>
   </div>
-</div>
 
-<!-- ================= PRESCRIPTION MODAL ================= -->
-<div id="prescriptionModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Prescription</h2>
-      <button class="close-btn" onclick="closePrescription()">×</button>
+  <!-- ================= PRESCRIPTION MODAL ================= -->
+  <div id="prescriptionModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Prescription</h2>
+        <button class="close-btn" onclick="closePrescription()">×</button>
+      </div>
+
+      <form onsubmit="submitPrescription(event)">
+        <div class="form-group">
+          <label>Patient Name</label>
+          <input id="patientName" readonly />
+        </div>
+
+        <div class="form-group">
+          <label>Diagnosis</label>
+          <input id="diag" required placeholder="Enter diagnosis" />
+        </div>
+
+        <div class="form-group">
+          <label>Medicines</label>
+          <textarea id="meds" required rows="4" placeholder="Enter medicines with dosage and frequency"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Advice</label>
+          <textarea id="advice" rows="3" placeholder="Additional advice for the patient"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Follow-up Date</label>
+          <input id="followupDate" type="date" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-dark">Save Prescription</button>
+          <button type="button" class="btn-light" onclick="closePrescription()">Cancel</button>
+        </div>
+      </form>
     </div>
-
-    <form onsubmit="submitPrescription(event)">
-      <div class="form-group">
-        <label>Patient Name</label>
-        <input id="patientName" readonly />
-      </div>
-
-      <div class="form-group">
-        <label>Diagnosis</label>
-        <input id="diag" required placeholder="Enter diagnosis" />
-      </div>
-
-      <div class="form-group">
-        <label>Medicines</label>
-        <textarea id="meds" required rows="4" placeholder="Enter medicines with dosage and frequency"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Advice</label>
-        <textarea id="advice" rows="3" placeholder="Additional advice for the patient"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Follow-up Date</label>
-        <input id="followupDate" type="date" />
-      </div>
-
-      <div class="modal-actions">
-        <button type="submit" class="btn-dark">Save Prescription</button>
-        <button type="button" class="btn-light" onclick="closePrescription()">Cancel</button>
-      </div>
-    </form>
   </div>
-</div>
 
-<!-- ================= SCRIPT ================= -->
-<script src="js/keyExchange.js"></script>
-<script src="js/doctor-dashboard.js"></script>
+  <!-- ================= MY PATIENTS MODAL ================= -->
+  <div id="patientsModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-users"></i> My Patients</h2>
+        <button class="close-btn" onclick="closePatients()">×</button>
+      </div>
+      <div style="padding: 2rem; max-height: 60vh; overflow-y: auto;">
+        <table style="width:100%; border-collapse: collapse;">
+          <thead>
+            <tr style="text-align:left; border-bottom: 2px solid var(--border-color);">
+              <th style="padding: 1rem;">Patient Name</th>
+              <th style="padding: 1rem;">Last Visit</th>
+              <th style="padding: 1rem;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="patientsTableBody">
+            <!-- Dynamic Content -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= REPORTS MODAL ================= -->
+  <div id="reportsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-chart-bar"></i> Activity Reports</h2>
+        <button class="close-btn" onclick="closeReports()">×</button>
+      </div>
+      <div id="reportsContent" style="padding: 2rem;">
+        <!-- Dynamic Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MEDICAL REPORT UPLOAD MODAL ================= -->
+  <div id="uploadReportModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-cloud-upload"></i> Upload Medical Report</h2>
+        <button class="close-btn" onclick="closeUploadReport()">×</button>
+      </div>
+      <form onsubmit="saveMedicalReport(event)" style="padding: 1.5rem;">
+        <div class="form-group">
+          <label>Select Patient</label>
+          <select id="reportPatientEmail" required style="width: 100%; padding: 0.5rem;"></select>
+        </div>
+        <div class="form-group">
+          <label>Report Name</label>
+          <input type="text" id="reportName" required placeholder="e.g., Blood Test Feb 2026">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="reportDesc" rows="3" placeholder="Additional notes..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;"><i class="fa-solid fa-save"></i> Save
+          Report</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MESSAGING MODAL ================= -->
+  <div id="messagingModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-comments"></i> Patient Messaging</h2>
+        <button class="close-btn" onclick="closeMessaging()">×</button>
+      </div>
+      <div style="padding: 1.5rem;">
+        <div id="messageHistory"
+          style="height: 300px; overflow-y: auto; border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; background: var(--bg-light);">
+          <p style="text-align: center; color: var(--text-secondary);">Select a patient to start chatting</p>
+        </div>
+        <div class="message-input-area" style="display: flex; gap: 0.5rem;">
+          <select id="messageRecipient"
+            style="flex: 1; padding: 0.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <option value="">Select Patient</option>
+          </select>
+          <input type="text" id="messageContent" placeholder="Type a message..."
+            style="flex: 3; padding: 0.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <button class="btn-primary" onclick="sendMessage()" style="padding: 0.5rem 1rem;"><i
+              class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCRIPT ================= -->
+  <script src="js/keyExchange.js"></script>
+  <script src="js/doctor-dashboard.js"></script>
 
 </body>
+
 </html>

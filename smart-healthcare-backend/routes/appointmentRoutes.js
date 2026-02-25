@@ -8,13 +8,14 @@ const {
   decrypt,
   signData,
   verifySignature,
-  encryptWithSessionKey, 
-  decryptWithSessionKey  
+  encryptWithSessionKey,
+  decryptWithSessionKey
 } = require("../utils/crypto");
 
-const { encodeBase64, decodeBase64 } = require("../utils/encoding"); 
+const { encodeBase64, decodeBase64 } = require("../utils/encoding");
+const { generateQR } = require("../utils/qr");
 const PDFDocument = require("pdfkit");
-const verifyToken = require("../middleware/verifyToken"); 
+const verifyToken = require("../middleware/verifyToken");
 
 const router = express.Router();
 
@@ -282,7 +283,7 @@ router.get("/prescription/pdf/:id", async (req, res) => {
 /* ================= PDF USING ENCODED ID ================= */
 router.get("/prescription/pdf/encoded/:encodedId", async (req, res) => {
   try {
-    const decodedId = decodeBase64(req.params.encodedId); 
+    const decodedId = decodeBase64(req.params.encodedId);
 
     const appointment = await Appointment.findById(decodedId)
       .populate("doctor");
@@ -343,6 +344,91 @@ router.get("/admin/prescriptions", verifyToken, async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ success: false });
+  }
+});
+
+/* ================= GENERATE QR CODE FOR PRESCRIPTION ================= */
+router.get("/prescription/qr/:id", async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id)
+      .populate("doctor");
+
+    if (!appointment || !appointment.prescription) {
+      return res.status(404).json({
+        success: false,
+        message: "Prescription not found"
+      });
+    }
+
+    if (appointment.prescription.isRevoked) {
+      return res.status(403).json({
+        success: false,
+        message: "Prescription revoked by admin"
+      });
+    }
+
+    // Decrypt prescription data
+    const diagnosis = decryptWithSessionKey(appointment.prescription.diagnosis) || "";
+    const medicines = decryptWithSessionKey(appointment.prescription.medicines) || "";
+    const advice = appointment.prescription.advice
+      ? decryptWithSessionKey(appointment.prescription.advice)
+      : "";
+
+    // Create formatted prescription text for QR code
+    const prescriptionText = `
+╔════════════════════════════════════╗
+║   🏥 MEDICARE PRESCRIPTION 🏥     ║
+╚════════════════════════════════════╝
+
+PATIENT: ${appointment.patientName}
+EMAIL: ${appointment.patientEmail}
+
+DOCTOR: ${appointment.doctor.name}
+SPECIALIZATION: ${appointment.doctor.specialization}
+DATE: ${appointment.date}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 DIAGNOSIS:
+${diagnosis}
+
+💊 PRESCRIBED MEDICINES:
+${medicines}
+
+💡 MEDICAL ADVICE:
+${advice || "No additional advice provided"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔐 Digitally Signed Prescription
+Verification: ${appointment.prescription.signature ? "Valid" : "Unverified"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`.trim();
+
+    // Generate QR code with prescription text
+    const qrCodeDataUrl = await generateQR(prescriptionText);
+
+    res.json({
+      success: true,
+      qrCode: qrCodeDataUrl,
+      prescriptionText: prescriptionText,
+      prescriptionData: {
+        patient: appointment.patientName,
+        doctor: appointment.doctor.name,
+        date: appointment.date,
+        diagnosis,
+        medicines,
+        advice
+      }
+    });
+
+  } catch (err) {
+    console.error("QR GENERATION ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error generating QR code"
+    });
   }
 });
 

@@ -9,6 +9,9 @@ const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
+const healthMetricRoutes = require("./routes/healthMetricRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const medicalReportRoutes = require("./routes/medicalReportRoutes");
 
 /* ================= 🔐 CRYPTO (DIFFIE–HELLMAN) ================= */
 const {
@@ -32,6 +35,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/health-metrics", healthMetricRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/medical-reports", medicalReportRoutes);
 
 /* ===================================================== */
 /* ============ 🔐 DIFFIE–HELLMAN KEY EXCHANGE ========== */

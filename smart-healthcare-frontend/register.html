@@ -1,56 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Create Account</title>
+  <title data-i18n="auth.register">Register - MediCare</title>
   <link rel="stylesheet" href="css/auth.css">
 </head>
+
 <body>
 
-<div class="auth-box">
-  <h2>Create Account</h2>
-  <p>Join MediCare for better healthcare</p>
+  <div class="auth-box">
 
-  <form onsubmit="register(event)">
-    <input
-      type="text"
-      id="name"
-      placeholder="Full Name"
-      required
-    >
+    <h2 data-i18n="auth.register">Register</h2>
+    <p data-i18n="auth.signUp">Create a new MediCare account</p>
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Email"
-      required
-    >
+    <form onsubmit="register(event)">
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-      minlength="6"
-      required
-    >
+      <input type="text" id="name" data-i18n-placeholder="auth.enterName" placeholder="Full Name" required>
 
-    <!-- ✅ ADMIN ADDED -->
-    <select id="role" required>
-      <option value="" disabled selected>Select Role</option>
-      <option value="patient">Patient</option>
-      <option value="doctor">Doctor</option>
-      <option value="admin">Admin</option>
-    </select>
+      <input type="email" id="email" data-i18n-placeholder="auth.enterEmail" placeholder="Email" required>
 
-    <button type="submit">Register</button>
-  </form>
+      <input type="password" id="password" data-i18n-placeholder="auth.enterPassword" placeholder="Password" required>
 
-  <p class="auth-link">
-    Already have an account?
-    <a href="login.html">Sign in</a>
-  </p>
-</div>
+      <input type="password" id="confirmPassword" data-i18n-placeholder="auth.confirmPassword"
+        placeholder="Confirm Password" required>
 
-<script src="js/auth.js"></script>
+      <select id="role" required>
+        <option value="" data-i18n="auth.role">Select Role</option>
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+      </select>
+
+      <button type="submit" data-i18n="auth.signUp">Sign up</button>
+
+    </form>
+
+    <p class="auth-link">
+      <span data-i18n="auth.existingUser">Already have an account?</span>
+      <a href="login.html" data-i18n="auth.signIn">Sign in</a>
+    </p>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
 </body>
+
 </html>

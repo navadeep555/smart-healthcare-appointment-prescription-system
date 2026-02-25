@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");          
 const User = require("../models/User");
+const Doctor = require("../models/Doctor");
 
 const router = express.Router();
 
@@ -44,6 +45,17 @@ router.post("/register", async (req, res) => {
         return res.json({
           success: false,
           message: "Admin already exists. Only one admin is allowed."
+        });
+      }
+    }
+
+    /* 🩺 DOCTOR VERIFICATION: Only pre-authorized doctor emails can register */
+    if (role === "doctor") {
+      const authorizedDoctor = await Doctor.findOne({ email });
+      if (!authorizedDoctor) {
+        return res.json({
+          success: false,
+          message: "This email is not authorized for a Doctor account. Please contact the administrator."
         });
       }
     }

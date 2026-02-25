@@ -1,50 +1,44 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Login</title>
+  <title data-i18n="auth.login">Login</title>
   <link rel="stylesheet" href="css/auth.css">
 </head>
+
 <body>
 
-<div class="auth-box">
-  <h2>Welcome Back</h2>
-  <p>Sign in to your MediCare account</p>
+  <div class="auth-box">
 
-  <!-- ✅ onsubmit correctly wired -->
-  <form onsubmit="login(event)">
+    <h2 data-i18n="auth.welcome">Welcome Back</h2>
+    <p data-i18n="common.welcome">Sign in to your MediCare account</p>
 
-    <!-- ✅ ADD id="email" -->
-    <input
-      type="email"
-      id="email"
-      placeholder="Email"
-      required
-    >
+    <!-- ✅ onsubmit correctly wired -->
+    <form onsubmit="login(event)">
 
-    <!-- ✅ ADD id="password" -->
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-      required
-    >
+      <!-- ✅ ADD id="email" -->
+      <input type="email" id="email" data-i18n-placeholder="auth.enterEmail" placeholder="Email" required>
 
-    <!-- ✅ EXPLICIT submit button -->
-    <button type="submit">Sign in</button>
+      <!-- ✅ ADD id="password" -->
+      <input type="password" id="password" data-i18n-placeholder="auth.enterPassword" placeholder="Password" required>
 
-  </form>
+      <!-- ✅ EXPLICIT submit button -->
+      <button type="submit" data-i18n="auth.signIn">Sign in</button>
 
-  <p class="auth-link">
-    Don't have an account?
-    <a href="register.html">Sign up</a>
-  </p>
-  <p class="auth-link">
-  <a href="forgot-password.html">Forgot password?</a>
-</p>
+    </form>
 
-</div>
+    <p class="auth-link">
+      <span data-i18n="auth.newUser">Don't have an account?</span>
+      <a href="register.html" data-i18n="auth.signUp">Sign up</a>
+    </p>
+    <p class="auth-link">
+      <a href="forgot-password.html" data-i18n="auth.forgotPassword">Forgot password?</a>
+    </p>
 
+  </div>
 
-<script src="js/auth.js"></script>
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
 </body>
+
 </html>
