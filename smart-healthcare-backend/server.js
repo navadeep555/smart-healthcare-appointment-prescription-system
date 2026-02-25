@@ -13,7 +13,7 @@ const healthMetricRoutes = require("./routes/healthMetricRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const medicalReportRoutes = require("./routes/medicalReportRoutes");
 
-/* ================= 🔐 CRYPTO (DIFFIE–HELLMAN) ================= */
+/* ================= CRYPTO (DIFFIE-HELLMAN) ================= */
 const {
   generateDHKeys,
   computeSharedKey
@@ -27,8 +27,8 @@ app.use(express.json());
 /* ================= DATABASE ================= */
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Atlas connected"))
-  .catch(err => console.error("❌ MongoDB error:", err.message));
+  .then(() => console.log("MongoDB Atlas connected successfully"))
+  .catch(err => console.error("MongoDB connection error:", err.message));
 
 /* ================= ROUTES ================= */
 app.use("/api/auth", authRoutes);
@@ -40,7 +40,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/medical-reports", medicalReportRoutes);
 
 /* ===================================================== */
-/* ============ 🔐 DIFFIE–HELLMAN KEY EXCHANGE ========== */
+/* ============ DIFFIE-HELLMAN KEY EXCHANGE ============= */
 /* ===================================================== */
 
 /*
@@ -59,7 +59,7 @@ app.get("/api/crypto/key-exchange/init", (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ DH INIT ERROR:", err.message);
+    console.error("DH INIT ERROR:", err.message);
     res.status(500).json({
       success: false,
       message: "Key exchange initialization failed"
@@ -90,7 +90,7 @@ app.post("/api/crypto/key-exchange/complete", (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ DH COMPLETE ERROR:", err.message);
+    console.error("DH COMPLETE ERROR:", err.message);
     res.status(500).json({
       success: false,
       message: "Key exchange failed"
@@ -106,5 +106,5 @@ app.get("/api/test", (req, res) => {
 /* ================= SERVER ================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

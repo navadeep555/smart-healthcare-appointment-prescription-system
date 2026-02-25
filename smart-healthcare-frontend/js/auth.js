@@ -107,10 +107,10 @@ async function verifyOTP(e) {
 
     // Save logged in user
     localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("token", data.token);   // ✅ ADDED (DO NOT REMOVE)
+    localStorage.setItem("token", data.token);   // Store JWT token for authenticated API calls
     localStorage.removeItem("otpEmail");
 
-    // 🔥 ROLE BASED DASHBOARD
+    // Redirect user to the appropriate dashboard based on their role
     if (data.user.role === "admin") {
       window.location.href = "admin-dashboard.html";
     } else if (data.user.role === "doctor") {

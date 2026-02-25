@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 
 /* ===================================================== */
-/* ========== 🔒 STATIC AES (ORIGINAL – KEPT) 🔒 ======== */
+/* ========== STATIC AES ENCRYPTION (ORIGINAL) ========== */
 /* ===================================================== */
 
 const SECRET_KEY = crypto
@@ -42,7 +42,7 @@ function verifySignature(data, signature) {
 }
 
 /* ===================================================== */
-/* ========== 🔑 DIFFIE–HELLMAN KEY EXCHANGE 🔑 ========= */
+/* ========== DIFFIE-HELLMAN KEY EXCHANGE =============== */
 /* ===================================================== */
 
 let dhInstance = null;
@@ -81,19 +81,19 @@ function computeSharedKey(clientPublicKeyHex) {
 }
 
 /* ===================================================== */
-/* ========== 🔐 SESSION AES (WITH FALLBACK) 🔐 ========= */
+/* ========== SESSION AES ENCRYPTION (WITH FALLBACK) ==== */
 /* ===================================================== */
 
 /*
-  ✅ Uses session key if available
-  ✅ Falls back to static AES if not
-  ✅ Prevents runtime crash
+  Uses session key if available.
+  Falls back to static AES if key is not yet established.
+  Prevents runtime crash when key exchange hasn't happened.
 */
 
 /* ================= SESSION ENCRYPT ================= */
 function encryptWithSessionKey(text) {
   if (!sharedSessionKey) {
-    // ✅ FALLBACK (IMPORTANT FIX)
+    // FALLBACK: use static AES when session key is not yet established
     return encrypt(text);
   }
 

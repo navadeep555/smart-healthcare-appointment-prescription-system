@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-const jwt = require("jsonwebtoken");          
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
 
@@ -13,7 +13,7 @@ const router = express.Router();
 const {
   generateDHKeys,
   computeSharedKey
-} = require("../utils/crypto"); 
+} = require("../utils/crypto");
 
 /* ================= EMAIL SETUP ================= */
 const transporter = nodemailer.createTransport({
@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
       return res.json({ success: false, message: "User already exists" });
     }
 
-    /* 🔒 ONLY ONE ADMIN ALLOWED */
+    /* RESTRICTION: Only one admin account is allowed in the system */
     if (role === "admin") {
       const existingAdmin = await User.findOne({ role: "admin" });
       if (existingAdmin) {
@@ -49,7 +49,7 @@ router.post("/register", async (req, res) => {
       }
     }
 
-    /* 🩺 DOCTOR VERIFICATION: Only pre-authorized doctor emails can register */
+    /* DOCTOR VERIFICATION: Only pre-authorized doctor emails can register */
     if (role === "doctor") {
       const authorizedDoctor = await Doctor.findOne({ email });
       if (!authorizedDoctor) {
@@ -114,7 +114,7 @@ router.post("/login", async (req, res) => {
         `
       });
     } catch (emailErr) {
-      console.warn("⚠️ EMAIL FAILED — CONTINUING LOGIN");
+      console.warn("WARNING: Email delivery failed — proceeding with login");
     }
 
     res.json({
@@ -161,7 +161,7 @@ router.post("/resend-otp", async (req, res) => {
         `
       });
     } catch (emailErr) {
-      console.warn("⚠️ EMAIL FAILED — CONTINUING");
+      console.warn("WARNING: Email delivery failed — continuing");
     }
 
     res.json({ success: true, message: "OTP resent successfully" });
@@ -295,7 +295,7 @@ router.post("/forgot-password", async (req, res) => {
         `
       });
     } catch (emailErr) {
-      console.warn("⚠️ EMAIL FAILED — CONTINUING");
+      console.warn("WARNING: Email delivery failed — continuing");
     }
 
     res.json({ success: true, message: "OTP sent to email" });

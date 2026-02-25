@@ -23,7 +23,7 @@ async function startKeyExchange() {
       ["deriveKey"]
     );
 
-    /* STEP 3: Import server public key (NO atob ❌) */
+    /* STEP 3: Import server public key using raw format (not atob) */
     const serverPublicKey = await window.crypto.subtle.importKey(
       "raw",
       base64ToArrayBuffer(serverPublicKeyBase64),
@@ -52,16 +52,16 @@ async function startKeyExchange() {
       })
     });
 
-    console.log("✅ Key exchange completed successfully");
+    console.log("Key exchange completed successfully");
 
   } catch (err) {
-    console.error("❌ Key exchange failed:", err);
+    console.error("Key exchange failed:", err);
   }
 }
 
 /* ================= HELPERS ================= */
 
-// ✅ SAFE Base64 → ArrayBuffer
+// Converts a Base64 string to an ArrayBuffer safely
 function base64ToArrayBuffer(base64) {
   const binary = window.atob(base64);
   const bytes = new Uint8Array(binary.length);
@@ -72,7 +72,7 @@ function base64ToArrayBuffer(base64) {
   return bytes.buffer;
 }
 
-// ✅ ArrayBuffer → Base64
+// Converts an ArrayBuffer to a Base64 string
 function arrayBufferToBase64(buffer) {
   const bytes = new Uint8Array(buffer);
   let binary = "";

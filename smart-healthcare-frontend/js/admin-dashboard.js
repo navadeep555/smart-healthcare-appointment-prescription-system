@@ -155,7 +155,7 @@ async function loadPrescriptionAudit() {
 
     if (!data.success || data.prescriptions.length === 0) {
       prescriptionTable.innerHTML =
-        "<tr><td colspan='6' style='text-align: center;'><div class='empty-state'><div class='empty-state-icon'>📋</div><p>No prescriptions found</p></div></td></tr>";
+        "<tr><td colspan='6' style='text-align: center;'><div class='empty-state'><div class='empty-state-icon'><i class='fa-solid fa-clipboard-list'></i></div><p>No prescriptions found</p></div></td></tr>";
       return;
     }
 
@@ -198,7 +198,7 @@ function updatePrescriptionStats(prescriptions) {
 function displayPrescriptions(prescriptions) {
   if (prescriptions.length === 0) {
     prescriptionTable.innerHTML =
-      "<tr><td colspan='6' style='text-align: center;'><div class='empty-state'><div class='empty-state-icon'>📋</div><p>No prescriptions match the filters</p></div></td></tr>";
+      "<tr><td colspan='6' style='text-align: center;'><div class='empty-state'><div class='empty-state-icon'><i class='fa-solid fa-clipboard-list'></i></div><p>No prescriptions match the filters</p></div></td></tr>";
     return;
   }
 
@@ -221,18 +221,18 @@ function displayPrescriptions(prescriptions) {
       <td class="${p.isRevoked ? "invalid" : p.isValid ? "valid" : "invalid"
       }">
         ${p.isRevoked
-        ? "❌ Revoked"
+        ? "[Revoked]"
         : p.isValid
-          ? "✅ Verified"
-          : "⚠️ Invalid"
+          ? "Verified"
+          : "Invalid"
       }
       </td>
 
       <!-- Revocation Status -->
       <td>
         ${p.isRevoked
-        ? "<span style='color: var(--danger-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 999px; font-size: 0.85rem;'>🚫 Revoked</span>"
-        : "<span style='color: var(--secondary-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); border-radius: 999px; font-size: 0.85rem;'>✅ Active</span>"
+        ? "<span style='color: var(--danger-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 999px; font-size: 0.85rem;'>Revoked</span>"
+        : "<span style='color: var(--secondary-color); font-weight: bold; padding: 0.25rem 0.75rem; background: rgba(16, 185, 129, 0.1); border-radius: 999px; font-size: 0.85rem;'>Active</span>"
       }
       </td>
 
@@ -243,7 +243,7 @@ function displayPrescriptions(prescriptions) {
           class="admin-btn view-btn"
           title="View Details"
         >
-          👁️ View
+          <i class="fa-solid fa-eye"></i> View
         </button>
 
         <button 
@@ -252,7 +252,7 @@ function displayPrescriptions(prescriptions) {
           ${p.isRevoked ? "disabled" : ""}
           title="Edit Prescription"
         >
-          ✏️ Edit
+          <i class="fa-solid fa-pen"></i> Edit
         </button>
 
         <button 
@@ -261,7 +261,7 @@ function displayPrescriptions(prescriptions) {
           ${p.isRevoked ? "disabled" : ""}
           title="${p.isRevoked ? 'Already Revoked' : 'Revoke Prescription'}"
         >
-          ${p.isRevoked ? "🚫 Revoked" : "❌ Revoke"}
+          ${p.isRevoked ? "Revoked" : "Revoke"}
         </button>
       </td>
     `;
@@ -357,12 +357,12 @@ async function viewPrescriptionDetails(id) {
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Status</h3>
           <p><strong>Signature:</strong> 
             <span class="${prescription.isValid ? 'valid' : 'invalid'}">
-              ${prescription.isValid ? '✅ Verified' : '⚠️ Invalid'}
+              ${prescription.isValid ? 'Verified' : 'Invalid'}
             </span>
           </p>
           <p><strong>Revocation Status:</strong> 
             <span style="color: ${prescription.isRevoked ? 'var(--danger-color)' : 'var(--secondary-color)'};">
-              ${prescription.isRevoked ? '🚫 Revoked' : '✅ Active'}
+              ${prescription.isRevoked ? 'Revoked' : 'Active'}
             </span>
           </p>
         </div>
@@ -381,7 +381,7 @@ function closePrescriptionDetails() {
 
 /* ================= ADMIN ACTIONS ================= */
 
-// 🔧 Edit prescription (admin override)
+// Edit prescription (admin override)
 async function editPrescription(id, isRevoked) {
 
   if (isRevoked) {
@@ -430,7 +430,7 @@ async function editPrescription(id, isRevoked) {
   }
 }
 
-// ❌ Revoke prescription
+// Revoke prescription
 async function revokePrescription(id) {
   if (!confirm("Are you sure you want to revoke this prescription? This action cannot be undone.")) return;
 

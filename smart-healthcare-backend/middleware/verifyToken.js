@@ -4,7 +4,7 @@ module.exports = function verifyToken(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
-    // ❌ No Authorization header
+    //  No Authorization header
     if (!authHeader) {
       return res.status(401).json({
         success: false,
@@ -12,7 +12,7 @@ module.exports = function verifyToken(req, res, next) {
       });
     }
 
-    // ❌ Not in Bearer format
+    //  Not in Bearer format
     if (!authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
@@ -20,10 +20,10 @@ module.exports = function verifyToken(req, res, next) {
       });
     }
 
-    // ✅ Extract token
+    //  Extract token
     const token = authHeader.split(" ")[1];
 
-    // ❌ Token missing after Bearer
+    //  Token missing after Bearer
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -31,13 +31,13 @@ module.exports = function verifyToken(req, res, next) {
       });
     }
 
-    // ✅ Verify token
+    //  Verify token
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "secretkey"
     );
 
-    // ✅ Attach user info to request
+    //  Attach user info to request
     req.user = decoded; // { id, role }
 
     next();

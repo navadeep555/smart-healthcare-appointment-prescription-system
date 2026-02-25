@@ -33,8 +33,8 @@ async function findDoctors() {
     data.doctors.forEach(doc => {
       const option = document.createElement("option");
 
-      // 🔴 THIS IS CRITICAL
-      option.value = doc._id;   // must NOT be empty
+      // IMPORTANT: doctor ID must not be empty — used for booking
+      option.value = doc._id;
       option.textContent = `${doc.name} (${doc.specialization})`;
 
       select.appendChild(option);
@@ -74,8 +74,8 @@ async function bookAppointment() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          patientName: user.name,        // ✅ FIX
-          patientEmail: user.email,      // ✅ FIX
+          patientName: user.name,        // Patient name from session
+          patientEmail: user.email,      // Patient email from session
           doctorId,
           date,
           time,
@@ -87,7 +87,7 @@ async function bookAppointment() {
     const data = await res.json();
 
     if (data.success) {
-      alert("✅ Appointment booked successfully");
+      alert("Appointment booked successfully");
       window.location.href = "dashboard.html";
     } else {
       alert(data.message || "Booking failed");

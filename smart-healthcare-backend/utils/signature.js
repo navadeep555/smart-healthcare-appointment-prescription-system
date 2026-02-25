@@ -43,7 +43,7 @@ function decrypt(text) {
 
 /* ================= DIGITAL SIGNATURE ================= */
 
-// 🔐 SECRET FOR SIGNING (DO NOT CHANGE ONCE DEPLOYED)
+// SIGNING SECRET: Do not change this value after deployment (it will invalidate existing signatures)
 const SIGN_SECRET = process.env.SIGN_SECRET || "medicare_sign_secret";
 
 /* CREATE SIGNATURE */
