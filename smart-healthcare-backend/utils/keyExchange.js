@@ -5,7 +5,7 @@ let sessionKey = null;
 /* ================= CLIENT ECDH ================= */
 
 async function startKeyExchange() {
-  // 1️⃣ Generate client ECDH keys
+  // Generate client ECDH keys
   const clientKeyPair = await crypto.subtle.generateKey(
     {
       name: "ECDH",
@@ -15,7 +15,7 @@ async function startKeyExchange() {
     ["deriveKey"]
   );
 
-  // 2️⃣ Export client public key (Base64)
+  //  Export client public key (Base64)
   const clientPublicKeyRaw = await crypto.subtle.exportKey(
     "raw",
     clientKeyPair.publicKey
@@ -25,7 +25,7 @@ async function startKeyExchange() {
     String.fromCharCode(...new Uint8Array(clientPublicKeyRaw))
   );
 
-  // 3️⃣ Get server public key
+  // Get server public key
   const initRes = await fetch("http://localhost:5000/api/key-exchange/init");
   const initData = await initRes.json();
 
@@ -35,7 +35,7 @@ async function startKeyExchange() {
 
   const serverPublicKeyBase64 = initData.serverPublicKey;
 
-  // 4️⃣ Import server public key
+  //  Import server public key
   const serverPublicKeyRaw = Uint8Array.from(
     atob(serverPublicKeyBase64),
     c => c.charCodeAt(0)
@@ -52,7 +52,7 @@ async function startKeyExchange() {
     []
   );
 
-  // 5️⃣ Derive shared AES key
+  // Derive shared AES key
   sessionKey = await crypto.subtle.deriveKey(
     {
       name: "ECDH",
@@ -67,7 +67,7 @@ async function startKeyExchange() {
     ["encrypt", "decrypt"]
   );
 
-  // 6️⃣ Send client public key to server
+  // Send client public key to server
   await fetch("http://localhost:5000/api/key-exchange", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
