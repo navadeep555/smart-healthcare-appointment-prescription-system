@@ -19,6 +19,8 @@ function formatDoctorName(name) {
 }
 
 function looksEncrypted(str) {
+  /* Backend now always decrypts before sending — this function is kept
+     for safety but will not trigger under normal operation. */
   if (!str) return false;
   return str.length > 50 && !str.includes(" ");
 }
@@ -90,16 +92,16 @@ function displayAppointments(appointments) {
           </div>
         ` : ""}
         <div class="appointment-actions">
-          ${app.status === "Pending" ? `
-            <button class="btn-primary" onclick="openPrescription('${app._id}', '${app.patientName}')">
+          ${app.status === "Booked" ? `
+            <button class="btn-primary" onclick="openPrescription('${app._id}', '${app.patientName}', 'Booked')">
               <i class="fa-solid fa-file-signature"></i> Prescribe
             </button>
           ` : `
+            <button class="btn-primary" onclick="openPrescription('${app._id}', '${app.patientName}', 'Completed')">
+              <i class="fa-solid fa-file-signature"></i> Re-Prescribe
+            </button>
             <button class="btn-secondary" onclick="downloadPrescription('${app._id}')">
               <i class="fa-solid fa-download"></i> PDF
-            </button>
-            <button class="btn-light" onclick="openPrescription('${app._id}', '${app.patientName}')">
-              <i class="fa-solid fa-eye"></i> View
             </button>
           `}
         </div>
@@ -109,11 +111,12 @@ function displayAppointments(appointments) {
 }
 
 /* ================= PRESCRIPTION MODAL ================= */
-async function openPrescription(id, pName) {
+// status: 'Booked' = fresh write, 'Completed' = view/re-write existing
+async function openPrescription(id, pName, status = "Booked") {
   selectedAppointmentId = id;
   document.getElementById("patientName").value = pName;
 
-  // Clear form
+  // Always clear the form first
   document.getElementById("diag").value = "";
   document.getElementById("meds").value = "";
   document.getElementById("advice").value = "";
@@ -121,30 +124,34 @@ async function openPrescription(id, pName) {
     document.getElementById("followupDate").value = "";
   }
 
-  // If ID exists, try to load existing prescription (for viewing)
-  if (id) {
-    const app = allAppointments.find(a => a._id === id);
-    if (app && app.prescription) {
-      document.getElementById("diag").value = looksEncrypted(app.prescription.diagnosis) ? "Encrypted Content" : app.prescription.diagnosis;
-      document.getElementById("meds").value = looksEncrypted(app.prescription.medicines) ? "Encrypted Content" : app.prescription.medicines;
-      document.getElementById("advice").value = looksEncrypted(app.prescription.advice) ? "Encrypted Content" : (app.prescription.advice || "");
-      if (document.getElementById("followupDate") && app.prescription.followupDate) {
-        document.getElementById("followupDate").value = app.prescription.followupDate;
-      }
+  // Always remove any old badge first
+  const oldBadge = document.getElementById("verificationBadge");
+  if (oldBadge) oldBadge.remove();
 
-      // Add verification status badge to modal (dynamic)
-      let badge = document.getElementById("verificationBadge");
-      if (!badge) {
-        badge = document.createElement("div");
-        badge.id = "verificationBadge";
-        document.getElementById("prescriptionModal").querySelector(".modal-header").after(badge);
-      }
+  // For Completed appointments, load existing prescription data and show signature status
+  if (status !== "Booked" && id) {
+    const app = allAppointments.find(a => a._id === id);
+
+    if (app && app.prescription) {
+      // Only populate fields if the values are actual strings (not undefined/encrypted hex)
+      const diag = app.prescription.diagnosis;
+      const meds = app.prescription.medicines;
+      const adv = app.prescription.advice;
+
+      document.getElementById("diag").value = (diag && !looksEncrypted(diag)) ? diag : "";
+      document.getElementById("meds").value = (meds && !looksEncrypted(meds)) ? meds : "";
+      document.getElementById("advice").value = (adv && !looksEncrypted(adv)) ? adv : "";
+
+      // Show digital signature verification banner
+      const badge = document.createElement("div");
+      badge.id = "verificationBadge";
       badge.style.cssText = `padding: 10px 20px; background: ${app.prescription.isValid ? '#ecfdf5' : '#fef2f2'}; border-bottom: 1px solid ${app.prescription.isValid ? '#10b981' : '#ef4444'}; color: ${app.prescription.isValid ? '#065f46' : '#991b1b'}; font-size: 0.85rem; font-weight: 600;`;
-      badge.innerHTML = `<i class="fa-solid ${app.prescription.isValid ? 'fa-shield-check' : 'fa-triangle-exclamation'}"></i> ${app.prescription.isValid ? 'DIGITALLY SIGNED & VERIFIED' : 'SIGNATURE VERIFICATION FAILED'}`;
+      badge.innerHTML = `<i class="fa-solid ${app.prescription.isValid ? 'fa-shield-check' : 'fa-triangle-exclamation'}"></i> ${app.prescription.isValid
+        ? 'DIGITALLY SIGNED & VERIFIED'
+        : 'OLD SIGNATURE INVALID — RE-SUBMIT TO REFRESH'
+        }`;
+      document.getElementById("prescriptionModal").querySelector(".modal-header").after(badge);
     }
-  } else {
-    const badge = document.getElementById("verificationBadge");
-    if (badge) badge.remove();
   }
 
   document.getElementById("prescriptionModal").style.display = "flex";

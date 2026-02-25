@@ -1,4 +1,3 @@
-console.log("auth.js loaded");
 
 /* ================= REGISTER ================= */
 async function register(e) {

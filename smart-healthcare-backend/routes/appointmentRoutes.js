@@ -7,9 +7,7 @@ const {
   encrypt,
   decrypt,
   signData,
-  verifySignature,
-  encryptWithSessionKey,
-  decryptWithSessionKey
+  verifySignature
 } = require("../utils/crypto");
 
 const { encodeBase64, decodeBase64 } = require("../utils/encoding");
@@ -18,6 +16,18 @@ const PDFDocument = require("pdfkit");
 const verifyToken = require("../middleware/verifyToken");
 
 const router = express.Router();
+
+/* ================= SAFE DECRYPT HELPER ================= */
+// Returns empty string on failure instead of throwing,
+// preventing stale/session-key ciphertext from breaking verification.
+function safeDecrypt(text) {
+  if (!text) return "";
+  try {
+    return decrypt(text) || "";
+  } catch {
+    return "";
+  }
+}
 
 /* ================= BOOK APPOINTMENT ================= */
 router.post("/book", async (req, res) => {
@@ -77,21 +87,22 @@ router.get("/my/:email", async (req, res) => {
         }
 
         try {
-          const diagnosis = decryptWithSessionKey(app.prescription.diagnosis) || "";
-          const medicines = decryptWithSessionKey(app.prescription.medicines) || "";
-          const advice = app.prescription.advice
-            ? decryptWithSessionKey(app.prescription.advice)
-            : "";
+          const diagnosis = safeDecrypt(app.prescription.diagnosis);
+          const medicines = safeDecrypt(app.prescription.medicines);
+          const advice = safeDecrypt(app.prescription.advice);
 
           const isValid = verifySignature(
-            `${diagnosis}${medicines}${advice}${app._id}`,
+            `${diagnosis}${medicines}${advice}${app._id.toString()}`,
             app.prescription.signature
           );
 
-          app.prescription.diagnosis = diagnosis;
-          app.prescription.medicines = medicines;
-          app.prescription.advice = advice;
-          app.prescription.isValid = isValid;
+          app._doc.prescription = {
+            diagnosis,
+            medicines,
+            advice,
+            isValid,
+            isRevoked: app.prescription.isRevoked || false
+          };
 
         } catch {
           app.prescription.isValid = false;
@@ -137,22 +148,23 @@ router.get("/doctor/:value", async (req, res) => {
         }
 
         try {
-          const diagnosis = decryptWithSessionKey(app.prescription.diagnosis) || "";
-          const medicines = decryptWithSessionKey(app.prescription.medicines) || "";
-          const advice = app.prescription.advice
-            ? decryptWithSessionKey(app.prescription.advice)
-            : "";
+          const diagnosis = safeDecrypt(app.prescription.diagnosis);
+          const medicines = safeDecrypt(app.prescription.medicines);
+          const advice = safeDecrypt(app.prescription.advice);
 
           const isValid = verifySignature(
-            `${diagnosis}${medicines}${advice}${app._id}`,
+            `${diagnosis}${medicines}${advice}${app._id.toString()}`,
             app.prescription.signature
           );
 
-          app.prescription.diagnosis = diagnosis;
-          app.prescription.medicines = medicines;
-          app.prescription.advice = advice;
-          app.prescription.isValid = isValid;
-          app.prescription.isEditable = true;
+          app._doc.prescription = {
+            diagnosis,
+            medicines,
+            advice,
+            isValid,
+            isEditable: true,
+            isRevoked: app.prescription.isRevoked || false
+          };
 
         } catch {
           app.prescription.isValid = false;
@@ -212,13 +224,13 @@ router.post("/prescription/:id", async (req, res) => {
     }
 
     const signature = signData(
-      `${diagnosis}${medicines}${advice || ""}${appointment._id}`
+      `${diagnosis}${medicines}${advice || ""}${appointment._id.toString()}`
     );
 
     appointment.prescription = {
-      diagnosis: encryptWithSessionKey(diagnosis),
-      medicines: encryptWithSessionKey(medicines),
-      advice: advice ? encryptWithSessionKey(advice) : "",
+      diagnosis: encrypt(diagnosis),
+      medicines: encrypt(medicines),
+      advice: advice ? encrypt(advice) : "",
       signature,
       createdAt: new Date()
     };
@@ -251,10 +263,10 @@ router.get("/prescription/pdf/:id", async (req, res) => {
       });
     }
 
-    const diagnosis = decryptWithSessionKey(appointment.prescription.diagnosis);
-    const medicines = decryptWithSessionKey(appointment.prescription.medicines);
+    const diagnosis = decrypt(appointment.prescription.diagnosis);
+    const medicines = decrypt(appointment.prescription.medicines);
     const advice = appointment.prescription.advice
-      ? decryptWithSessionKey(appointment.prescription.advice)
+      ? decrypt(appointment.prescription.advice)
       : "—";
 
     const doc = new PDFDocument({ margin: 50 });
@@ -292,10 +304,10 @@ router.get("/prescription/pdf/encoded/:encodedId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Prescription not found" });
     }
 
-    const diagnosis = decryptWithSessionKey(appointment.prescription.diagnosis);
-    const medicines = decryptWithSessionKey(appointment.prescription.medicines);
+    const diagnosis = decrypt(appointment.prescription.diagnosis);
+    const medicines = decrypt(appointment.prescription.medicines);
     const advice = appointment.prescription.advice
-      ? decryptWithSessionKey(appointment.prescription.advice)
+      ? decrypt(appointment.prescription.advice)
       : "—";
 
     const doc = new PDFDocument({ margin: 50 });
@@ -368,17 +380,17 @@ router.get("/prescription/qr/:id", async (req, res) => {
     }
 
     // Decrypt prescription data
-    const diagnosis = decryptWithSessionKey(appointment.prescription.diagnosis) || "";
-    const medicines = decryptWithSessionKey(appointment.prescription.medicines) || "";
+    const diagnosis = decrypt(appointment.prescription.diagnosis) || "";
+    const medicines = decrypt(appointment.prescription.medicines) || "";
     const advice = appointment.prescription.advice
-      ? decryptWithSessionKey(appointment.prescription.advice)
+      ? decrypt(appointment.prescription.advice)
       : "";
 
     // Create formatted prescription text for QR code
     const prescriptionText = `
-╔════════════════════════════════════╗
-║   🏥 MEDICARE PRESCRIPTION 🏥     ║
-╚════════════════════════════════════╝
+====================================
+    MEDICARE PRESCRIPTION
+====================================
 
 PATIENT: ${appointment.patientName}
 EMAIL: ${appointment.patientEmail}
@@ -387,23 +399,23 @@ DOCTOR: ${appointment.doctor.name}
 SPECIALIZATION: ${appointment.doctor.specialization}
 DATE: ${appointment.date}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+------------------------------------
 
-📋 DIAGNOSIS:
+DIAGNOSIS:
 ${diagnosis}
 
-💊 PRESCRIBED MEDICINES:
+PRESCRIBED MEDICINES:
 ${medicines}
 
-💡 MEDICAL ADVICE:
+MEDICAL ADVICE:
 ${advice || "No additional advice provided"}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+------------------------------------
 
-🔐 Digitally Signed Prescription
+Digitally Signed Prescription
 Verification: ${appointment.prescription.signature ? "Valid" : "Unverified"}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+------------------------------------
 `.trim();
 
     // Generate QR code with prescription text
@@ -432,4 +444,145 @@ Verification: ${appointment.prescription.signature ? "Valid" : "Unverified"}
   }
 });
 
+/* ================= GET SINGLE APPOINTMENT BY ID (PUBLIC) ================= */
+router.get("/by-id/:id", async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id)
+      .populate("doctor");
+
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: "Appointment not found" });
+    }
+
+    if (!appointment.prescription) {
+      return res.json({ success: false, message: "No prescription for this appointment" });
+    }
+
+    if (appointment.prescription.isRevoked) {
+      return res.json({ success: false, message: "Prescription has been revoked" });
+    }
+
+    // Decrypt prescription fields using safe wrapper
+    const diagnosis = safeDecrypt(appointment.prescription.diagnosis);
+    const medicines = safeDecrypt(appointment.prescription.medicines);
+    const advice = safeDecrypt(appointment.prescription.advice);
+
+    // Verify digital signature
+    const isValid = verifySignature(
+      `${diagnosis}${medicines}${advice}${appointment._id.toString()}`,
+      appointment.prescription.signature
+    );
+
+    res.json({
+      success: true,
+      appointment: {
+        _id: appointment._id,
+        patientName: appointment.patientName,
+        patientEmail: appointment.patientEmail,
+        date: appointment.date,
+        doctor: appointment.doctor,
+        prescription: {
+          diagnosis,
+          medicines,
+          advice,
+          isValid,
+          isRevoked: appointment.prescription.isRevoked || false
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error("BY-ID ERROR:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+/* ================= ADMIN: DEBUG SIGNATURE FOR ONE APPOINTMENT ================= */
+router.get("/admin/debug/:id", async (req, res) => {
+  try {
+    const app = await Appointment.findById(req.params.id);
+    if (!app || !app.prescription) {
+      return res.json({ success: false, message: "Not found" });
+    }
+
+    const diagnosis = safeDecrypt(app.prescription.diagnosis);
+    const medicines = safeDecrypt(app.prescription.medicines);
+    const advice = safeDecrypt(app.prescription.advice);
+    const appId = app._id.toString();
+    const verifyStr = `${diagnosis}${medicines}${advice}${appId}`;
+    const computed = signData(verifyStr);
+    const stored = app.prescription.signature;
+    const match = computed === stored;
+
+    res.json({
+      appId,
+      diagnosisRaw: app.prescription.diagnosis?.substring(0, 30),
+      medicinesRaw: app.prescription.medicines?.substring(0, 30),
+      adviceRaw: app.prescription.advice?.substring(0, 30),
+      diagnosis, medicines, advice,
+      verifyStr,
+      storedSig: stored?.substring(0, 32),
+      computedSig: computed?.substring(0, 32),
+      match
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* ================= ADMIN: RE-SIGN ALL PRESCRIPTIONS ================= */
+// One-time fix route: decrypts and re-signs all existing prescriptions
+// using the current signing key. Run once to fix historical mismatches.
+router.post("/admin/resign-all", async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      prescription: { $exists: true }
+    });
+
+    let fixed = 0;
+    let skipped = 0;
+
+    for (const app of appointments) {
+      if (!app.prescription || app.prescription.isRevoked) {
+        skipped++;
+        continue;
+      }
+
+      // Decrypt current values (may fail for old/corrupted data - use safe wrapper)
+      const diagnosis = safeDecrypt(app.prescription.diagnosis);
+      const medicines = safeDecrypt(app.prescription.medicines);
+      const advice = safeDecrypt(app.prescription.advice);
+
+      if (!diagnosis || !medicines) {
+        skipped++;
+        continue;
+      }
+
+      // Re-sign with current key
+      const newSignature = signData(
+        `${diagnosis}${medicines}${advice}${app._id.toString()}`
+      );
+
+      // Re-encrypt with current static encrypt function
+      app.prescription.diagnosis = encrypt(diagnosis);
+      app.prescription.medicines = encrypt(medicines);
+      app.prescription.advice = advice ? encrypt(advice) : "";
+      app.prescription.signature = newSignature;
+
+      await app.save();
+      fixed++;
+    }
+
+    res.json({
+      success: true,
+      message: `Re-signed ${fixed} prescriptions. Skipped ${skipped}.`
+    });
+
+  } catch (err) {
+    console.error("RESIGN-ALL ERROR:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
+

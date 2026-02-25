@@ -43,7 +43,7 @@ const appointmentSchema = new mongoose.Schema({
     diagnosis: String,
     medicines: String,
     advice: String,
-    signature: String,     // 🔐 digital signature
+    signature: String,     // digital signature (secured)
     signedBy: String,      // doctor name/email
     createdAt: Date,
 

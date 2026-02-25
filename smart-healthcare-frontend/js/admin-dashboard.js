@@ -1,4 +1,3 @@
-console.log("admin-dashboard.js loaded");
 
 /* ================= AUTH CHECK ================= */
 const user = JSON.parse(localStorage.getItem("user"));

@@ -1,4 +1,3 @@
-console.log("appointment.js loaded");
 
 /* ================= FIND DOCTORS ================= */
 async function findDoctors() {

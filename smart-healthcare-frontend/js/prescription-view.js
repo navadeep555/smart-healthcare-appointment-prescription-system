@@ -16,13 +16,8 @@ function decodeBase64(encoded) {
 
 /* ================= LOAD PRESCRIPTION ================= */
 async function loadPrescription() {
-    const loadingState = document.getElementById("loadingState");
-    const errorState = document.getElementById("errorState");
-    const prescriptionContent = document.getElementById("prescriptionContent");
-    const errorMessage = document.getElementById("errorMessage");
-
     try {
-        // Get encoded ID from URL
+        // Get encoded ID from URL (set when QR is generated)
         const encodedId = getUrlParameter("id");
 
         if (!encodedId) {
@@ -30,7 +25,7 @@ async function loadPrescription() {
             return;
         }
 
-        // Decode the ID
+        // Decode the Base64 appointment ID
         const appointmentId = decodeBase64(encodedId);
 
         if (!appointmentId) {
@@ -38,52 +33,21 @@ async function loadPrescription() {
             return;
         }
 
-        // Fetch prescription data
+        // Fetch appointment directly by ID using the dedicated public route
         const response = await fetch(
-            `http://localhost:5000/api/appointments/my/temp@example.com`
+            `http://localhost:5000/api/appointments/by-id/${appointmentId}`
         );
 
         const data = await response.json();
 
         if (!data.success) {
-            showError("Failed to load prescription data.");
-            return;
-        }
-
-        // Find the specific appointment
-        const appointment = data.appointments.find(
-            app => app._id === appointmentId || app.encodedId === encodedId
-        );
-
-        if (!appointment) {
-            // Try direct fetch using the decoded ID
-            const directResponse = await fetch(
-                `http://localhost:5000/api/appointments/prescription/pdf/${appointmentId}`
-            );
-
-            if (!directResponse.ok) {
-                showError("Prescription not found.");
-                return;
-            }
-
-            // Since we can't easily parse the PDF, let's use a different approach
-            // We'll fetch from the patient's appointments list
-            showError("Unable to retrieve prescription details. Please use the patient dashboard.");
-            return;
-        }
-
-        if (!appointment.prescription) {
-            showError("No prescription found for this appointment.");
-            return;
-        }
-
-        if (appointment.prescription.isRevoked) {
-            showError("This prescription has been revoked by the administrator.");
+            // Surface the specific message from the backend (revoked, not found, etc.)
+            showError(data.message || "Failed to load prescription data.");
             return;
         }
 
         // Display the prescription
-        displayPrescription(appointment);
+        displayPrescription(data.appointment);
 
     } catch (err) {
         console.error("Error loading prescription:", err);
@@ -102,8 +66,10 @@ function displayPrescription(appointment) {
     prescriptionContent.style.display = "block";
 
     // Populate patient information
-    document.getElementById("patientName").textContent = appointment.patientName;
-    document.getElementById("patientEmail").textContent = appointment.patientEmail;
+    document.getElementById("patientName").textContent =
+        appointment.patientName || "N/A";
+    document.getElementById("patientEmail").textContent =
+        appointment.patientEmail || "N/A";
 
     // Populate doctor information
     document.getElementById("doctorName").textContent =
@@ -121,19 +87,19 @@ function displayPrescription(appointment) {
     document.getElementById("advice").textContent =
         appointment.prescription.advice || "No additional advice provided";
 
-    // Update verification badge
-    if (appointment.prescription.isValid !== false) {
+    // Update verification badge based on digital signature check
+    if (appointment.prescription.isValid) {
         verificationBadge.classList.add("verified");
         verificationBadge.innerHTML = `
-      <span class="badge-icon">✓</span>
-      <span class="badge-text">Verified</span>
-    `;
+            <span class="badge-icon"><i class="fa-solid fa-check"></i></span>
+            <span class="badge-text">Verified</span>
+        `;
     } else {
         verificationBadge.classList.add("unverified");
         verificationBadge.innerHTML = `
-      <span class="badge-icon">⚠</span>
-      <span class="badge-text">Unverified</span>
-    `;
+            <span class="badge-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span class="badge-text">Invalid</span>
+        `;
     }
 }
 
