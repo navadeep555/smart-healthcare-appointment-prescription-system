@@ -35,7 +35,7 @@ async function loadPrescription() {
 
         // Fetch appointment directly by ID using the dedicated public route
         const response = await fetch(
-            `http://localhost:5000/api/appointments/by-id/${appointmentId}`
+            `${BASE_URL}/api/appointments/by-id/${appointmentId}`
         );
 
         const data = await response.json();

@@ -4,7 +4,7 @@ console.log("Starting key exchange...");
 async function startKeyExchange() {
   try {
     /* STEP 1: Get server public key */
-    const res = await fetch("http://localhost:5000/api/key-exchange/init");
+    const res = await fetch(`${BASE_URL}/api/key-exchange/init`);
     const data = await res.json();
 
     if (!data.success) {
@@ -44,7 +44,7 @@ async function startKeyExchange() {
     const clientPublicKeyBase64 = arrayBufferToBase64(clientPublicKeyRaw);
 
     /* STEP 5: Send client public key to server */
-    await fetch("http://localhost:5000/api/auth/key-exchange/complete", {
+    await fetch(`${BASE_URL}/api/auth/key-exchange/complete`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -85,7 +85,7 @@ async function loadAdminDashboard() {
 async function loadStats() {
   try {
     /* -------- USERS / DOCTORS / PATIENTS -------- */
-    const usersRes = await fetch("http://localhost:5000/api/admin/users-v2", {
+    const usersRes = await fetch(`${BASE_URL}/api/admin/users-v2`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -100,7 +100,7 @@ async function loadStats() {
     }
 
     /* -------- APPOINTMENTS -------- */
-    const appRes = await fetch("http://localhost:5000/api/admin/appointments-v2", {
+    const appRes = await fetch(`${BASE_URL}/api/admin/appointments-v2`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -142,7 +142,7 @@ async function loadPrescriptionAudit() {
 
   try {
     const res = await fetch(
-      "http://localhost:5000/api/admin/prescriptions-v2",
+      `${BASE_URL}/api/admin/prescriptions-v2`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -404,7 +404,7 @@ async function editPrescription(id, isRevoked) {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/admin/prescription/edit/${id}`,
+      `${BASE_URL}/api/admin/prescription/edit/${id}`,
       {
         method: "PUT",
         headers: {
@@ -435,7 +435,7 @@ async function revokePrescription(id) {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/admin/prescription/revoke/${id}`,
+      `${BASE_URL}/api/admin/prescription/revoke/${id}`,
       {
         method: "PUT",
         headers: {
@@ -492,7 +492,7 @@ async function loadUserManagement() {
   tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading users...</td></tr>';
 
   try {
-    const res = await fetch("http://localhost:5000/api/admin/users-list", {
+    const res = await fetch(`${BASE_URL}/api/admin/users-list`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -524,7 +524,7 @@ async function deleteUser(id, role) {
 
   try {
     const endpoint = role === 'doctor' ? `doctor/${id}` : `patient/${id}`;
-    const res = await fetch(`http://localhost:5000/api/admin/${endpoint}`, {
+    const res = await fetch(`${BASE_URL}/api/admin/${endpoint}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -548,7 +548,7 @@ async function loadAppointmentManagement() {
   tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading appointments...</td></tr>';
 
   try {
-    const res = await fetch("http://localhost:5000/api/admin/appointments-v2", {
+    const res = await fetch(`${BASE_URL}/api/admin/appointments-v2`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -586,9 +586,9 @@ async function loadAnalytics() {
 
   try {
     const [usersRes, appsRes, prescriptionsRes] = await Promise.all([
-      fetch("http://localhost:5000/api/admin/users-v2", { headers: { Authorization: `Bearer ${token}` } }),
-      fetch("http://localhost:5000/api/admin/appointments-v2", { headers: { Authorization: `Bearer ${token}` } }),
-      fetch("http://localhost:5000/api/admin/prescriptions-v2", { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${BASE_URL}/api/admin/users-v2`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/admin/appointments-v2`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/admin/prescriptions-v2`, { headers: { Authorization: `Bearer ${token}` } })
     ]);
 
     const usersData = await usersRes.json();

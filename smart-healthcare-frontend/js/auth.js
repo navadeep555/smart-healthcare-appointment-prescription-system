@@ -14,7 +14,7 @@ async function register(e) {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch(`${BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password, role })
@@ -48,7 +48,7 @@ async function login(e) {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -91,7 +91,7 @@ async function verifyOTP(e) {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+    const res = await fetch(`${BASE_URL}/api/auth/verify-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp })
@@ -135,7 +135,7 @@ async function resendOTP() {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/resend-otp", {
+    const res = await fetch(`${BASE_URL}/api/auth/resend-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
@@ -167,7 +167,7 @@ async function sendResetOTP(e) {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+    const res = await fetch(`${BASE_URL}/api/auth/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
@@ -209,7 +209,7 @@ async function resetPassword(e) {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/reset-password", {
+    const res = await fetch(`${BASE_URL}/api/auth/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp, newPassword })

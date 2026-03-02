@@ -28,7 +28,7 @@ function looksEncrypted(str) {
 /* ================= LOAD APPOINTMENTS ================= */
 async function loadDoctorAppointments() {
   try {
-    const res = await fetch(`http://localhost:5000/api/appointments/doctor/${user.email}`);
+    const res = await fetch(`${BASE_URL}/api/appointments/doctor/${user.email}`);
     const data = await res.json();
 
     if (data.success) {
@@ -182,7 +182,7 @@ async function submitPrescription(e) {
     // Note: PDF generation on backend handles its own encryption/decryption 
     // but the API endpoint usually expects plaintext if it's going to re-encrypt
 
-    const res = await fetch(`http://localhost:5000/api/appointments/prescription/${selectedAppointmentId}`, {
+    const res = await fetch(`${BASE_URL}/api/appointments/prescription/${selectedAppointmentId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -206,7 +206,7 @@ async function submitPrescription(e) {
 }
 
 function downloadPrescription(id) {
-  window.open(`http://localhost:5000/api/appointments/prescription/pdf/${id}`, "_blank");
+  window.open(`${BASE_URL}/api/appointments/prescription/pdf/${id}`, "_blank");
 }
 
 /* ================= PROFILE ================= */
@@ -401,7 +401,7 @@ async function loadMessages() {
   if (!history) return;
 
   try {
-    const res = await fetch(`http://localhost:5000/api/messages/my/${user.email}`, {
+    const res = await fetch(`${BASE_URL}/api/messages/my/${user.email}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
     const data = await res.json();
@@ -432,7 +432,7 @@ async function sendMessage() {
   if (!recipient || !content) return;
 
   try {
-    const res = await fetch("http://localhost:5000/api/messages/send", {
+    const res = await fetch(`${BASE_URL}/api/messages/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -479,7 +479,7 @@ async function saveMedicalReport(e) {
   if (!patientEmail || !reportName) return;
 
   try {
-    const res = await fetch("http://localhost:5000/api/medical-reports/upload", {
+    const res = await fetch(`${BASE_URL}/api/medical-reports/upload`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

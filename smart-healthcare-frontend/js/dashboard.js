@@ -146,7 +146,7 @@ async function loadAppointments() {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/appointments/my/${user.email}`
+      `${BASE_URL}/api/appointments/my/${user.email}`
     );
     const data = await res.json();
 
@@ -262,7 +262,7 @@ async function loadPrescriptions() {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/appointments/my/${user.email}`
+      `${BASE_URL}/api/appointments/my/${user.email}`
     );
     const data = await res.json();
 
@@ -429,7 +429,7 @@ async function loadPrescriptions() {
 /* ================= DOWNLOAD PRESCRIPTION PDF ================= */
 function downloadPrescription(appointmentId) {
   window.open(
-    `http://localhost:5000/api/appointments/prescription/pdf/${appointmentId}`,
+    `${BASE_URL}/api/appointments/prescription/pdf/${appointmentId}`,
     "_blank"
   );
 }
@@ -440,7 +440,7 @@ async function cancelAppointment(appointmentId) {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/appointments/cancel/${appointmentId}`,
+      `${BASE_URL}/api/appointments/cancel/${appointmentId}`,
       { method: "PUT" }
     );
 
@@ -467,7 +467,7 @@ async function openHealthMetrics() {
   document.getElementById("healthMetricsModal").style.display = "flex";
 
   try {
-    const res = await fetch(`http://localhost:5000/api/health-metrics/my/${user.email}`, {
+    const res = await fetch(`${BASE_URL}/api/health-metrics/my/${user.email}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
     const data = await res.json();
@@ -499,7 +499,7 @@ async function saveHealthMetrics(e) {
   };
 
   try {
-    const res = await fetch("http://localhost:5000/api/health-metrics/update", {
+    const res = await fetch(`${BASE_URL}/api/health-metrics/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -530,7 +530,7 @@ async function viewPrescriptionHistory() {
   content.innerHTML = '<p class="loading">Fetching your medical history...</p>';
 
   try {
-    const res = await fetch(`http://localhost:5000/api/appointments/my/${user.email}`);
+    const res = await fetch(`${BASE_URL}/api/appointments/my/${user.email}`);
     const data = await res.json();
 
     if (data.success) {
@@ -655,7 +655,7 @@ async function viewLabReports() {
   content.innerHTML = '<p class="loading">Fetching your reports...</p>';
 
   try {
-    const res = await fetch(`http://localhost:5000/api/medical-reports/patient/${user.email}`, {
+    const res = await fetch(`${BASE_URL}/api/medical-reports/patient/${user.email}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
     const data = await res.json();
@@ -693,7 +693,7 @@ async function openMessaging() {
 
   try {
     // Ideally we should have a list-doctors API, but for now we'll use doctors from appointments
-    const res = await fetch(`http://localhost:5000/api/appointments/my/${user.email}`);
+    const res = await fetch(`${BASE_URL}/api/appointments/my/${user.email}`);
     const data = await res.json();
     if (data.success) {
       const doctors = [...new Set(data.appointments.map(a => JSON.stringify({ email: a.doctor.email, name: a.doctor.name })))].map(s => JSON.parse(s));
@@ -723,7 +723,7 @@ async function loadMessages() {
   if (!history) return;
 
   try {
-    const res = await fetch(`http://localhost:5000/api/messages/my/${user.email}`, {
+    const res = await fetch(`${BASE_URL}/api/messages/my/${user.email}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
     const data = await res.json();
@@ -754,7 +754,7 @@ async function sendMessage() {
   if (!recipient || !content) return;
 
   try {
-    const res = await fetch("http://localhost:5000/api/messages/send", {
+    const res = await fetch(`${BASE_URL}/api/messages/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

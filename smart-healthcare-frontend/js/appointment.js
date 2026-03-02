@@ -16,7 +16,7 @@ async function findDoctors() {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/doctors/by-disease?disease=${encodeURIComponent(disease)}`
+      `${BASE_URL}/api/doctors/by-disease?disease=${encodeURIComponent(disease)}`
     );
 
     const data = await res.json();
@@ -68,7 +68,7 @@ async function bookAppointment() {
 
   try {
     const res = await fetch(
-      "http://localhost:5000/api/appointments/book",
+      `${BASE_URL}/api/appointments/book`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
