@@ -57,7 +57,7 @@ async function bookAppointment() {
 
   if (!user) {
     alert("Please login again");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
     return;
   }
 
@@ -87,7 +87,7 @@ async function bookAppointment() {
 
     if (data.success) {
       alert("Appointment booked successfully");
-      window.location.href = "dashboard.html";
+      window.location.replace("dashboard.html");
     } else {
       alert(data.message || "Booking failed");
     }

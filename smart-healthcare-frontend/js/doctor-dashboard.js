@@ -1,7 +1,7 @@
 // Auth Check
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user || user.role !== "doctor") {
-  window.location.href = "login.html";
+  window.location.replace("login.html");
 }
 
 // State
@@ -350,7 +350,7 @@ function logout() {
   if (confirm("Are you sure?")) {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
   }
 }
 

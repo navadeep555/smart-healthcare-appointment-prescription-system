@@ -4,7 +4,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Check authentication
   if (localStorage.getItem('isLoggedIn') !== 'true') {
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
     return;
   }
 

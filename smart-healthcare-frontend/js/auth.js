@@ -28,7 +28,7 @@ async function register(e) {
     }
 
     alert("Registration successful. Please login.");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
   } catch (err) {
     console.error(err);
     alert("Server error. Try again later.");
@@ -65,7 +65,7 @@ async function login(e) {
     localStorage.setItem("otpEmail", data.email);
 
     alert("OTP sent to your email");
-    window.location.href = "otp.html";
+    window.location.replace("otp.html");
   } catch (err) {
     console.error(err);
     alert("Server error. Try again later.");
@@ -81,7 +81,7 @@ async function verifyOTP(e) {
 
   if (!email) {
     alert("Session expired. Please login again.");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
     return;
   }
 
@@ -111,11 +111,11 @@ async function verifyOTP(e) {
 
     // Redirect user to the appropriate dashboard based on their role
     if (data.user.role === "admin") {
-      window.location.href = "admin-dashboard.html";
+      window.location.replace("admin-dashboard.html");
     } else if (data.user.role === "doctor") {
-      window.location.href = "doctor-dashboard.html";
+      window.location.replace("doctor-dashboard.html");
     } else {
-      window.location.href = "dashboard.html";
+      window.location.replace("dashboard.html");
     }
 
   } catch (err) {
@@ -130,7 +130,7 @@ async function resendOTP() {
 
   if (!email) {
     alert("Session expired. Please login again.");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
     return;
   }
 
@@ -182,7 +182,7 @@ async function sendResetOTP(e) {
 
     localStorage.setItem("resetEmail", email);
     alert("OTP sent to your email");
-    window.location.href = "reset-password.html";
+    window.location.replace("reset-password.html");
   } catch (err) {
     console.error(err);
     alert("Server error. Try again later.");
@@ -199,7 +199,7 @@ async function resetPassword(e) {
 
   if (!email) {
     alert("Session expired. Please try again.");
-    window.location.href = "forgot-password.html";
+    window.location.replace("forgot-password.html");
     return;
   }
 
@@ -224,7 +224,7 @@ async function resetPassword(e) {
 
     localStorage.removeItem("resetEmail");
     alert("Password reset successful");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
   } catch (err) {
     console.error(err);
     alert("Server error. Try again later.");

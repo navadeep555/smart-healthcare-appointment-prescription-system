@@ -5,7 +5,7 @@ const token = localStorage.getItem("token");
 
 if (!user || user.role !== "admin" || !token) {
   alert("Unauthorized access");
-  window.location.href = "login.html";
+  window.location.replace("login.html");
 }
 
 /* ================= DOM ELEMENTS ================= */
@@ -675,7 +675,7 @@ function logout() {
   if (confirm("Are you sure you want to logout?")) {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
   }
 }
 

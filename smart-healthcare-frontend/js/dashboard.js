@@ -3,7 +3,7 @@
 const user = JSON.parse(localStorage.getItem("user"));
 
 if (!user) {
-  window.location.href = "login.html";
+  window.location.replace("login.html");
 }
 
 /* ================= WELCOME ================= */
@@ -126,7 +126,8 @@ function saveProfile(e) {
 function logout() {
   if (confirm("Are you sure you want to logout?")) {
     localStorage.removeItem("user");
-    window.location.href = "login.html";
+    localStorage.removeItem("token");
+    window.location.replace("login.html");
   }
 }
 
