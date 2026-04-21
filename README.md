@@ -2,6 +2,11 @@
 
 A secure and comprehensive healthcare management system designed for appointment booking and prescription management with robust authentication, encryption, and role-based access control.
 
+## 🔗 Live Deployments
+
+- **Frontend (Application)**: [https://smart-healthcare-appointment-prescr.vercel.app/](https://smart-healthcare-appointment-prescr.vercel.app/)
+- **Backend API (Server)**: [https://smart-healthcare-appointment-0bnh.onrender.com](https://smart-healthcare-appointment-0bnh.onrender.com)
+
 ## 🌟 Overview
 
 This system provides a complete digital healthcare solution that connects doctors and patients through a modern web-based platform. It streamlines the appointment booking process, manages prescriptions digitally, and maintains secure patient records for improved healthcare delivery.
